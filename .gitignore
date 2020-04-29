@@ -1,2 +1,4 @@
 /server-config/admins.nix
 /server-config/local-configuration.nix
+/server-config/support/webhook/server/target
+/server-config/support/webhook/generated.nix

@@ -73,6 +73,14 @@ let
   };
 
   environmentOptions = {
+    brokerPackage = mkOption {
+      type = types.package;
+      default = pkgs.portier-broker;
+      defaultText = "pkgs.portier-broker";
+      description = ''
+        The Portier broker package to use.
+      '';
+    };
     brokerPort = mkOption {
       type = types.port;
       default = 3333;
@@ -80,18 +88,26 @@ let
         Specifies on which port the Portier broker listens.
       '';
     };
-    demoPort = mkOption {
-      type = types.port;
-      default = 8000;
-      description = ''
-        Specifies on which port the Portier demo listens.
-      '';
-    };
     brokerVhost = mkOption {
       type = types.str;
       default = "";
       description = ''
         The virtual host of the Portier broker.
+      '';
+    };
+    demoPackage = mkOption {
+      type = types.package;
+      default = pkgs.portier-demo;
+      defaultText = "pkgs.portier-demo";
+      description = ''
+        The Portier demo package to use.
+      '';
+    };
+    demoPort = mkOption {
+      type = types.port;
+      default = 8000;
+      description = ''
+        Specifies on which port the Portier demo listens.
       '';
     };
     demoVhost = mkOption {
@@ -105,8 +121,6 @@ let
 
 in {
 
-  imports = [ ../portier/nixos ];
-
   options.portier = moduleOptions;
 
   config = let
@@ -116,6 +130,7 @@ in {
 
     services.portier-broker.instances = mergeMapEnvs (name: env: {
       "portier-broker-${name}" = {
+        package = env.brokerPackage;
         port = env.brokerPort;
         publicUrl = "https://${env.brokerVhost}";
         fromName = cfg.fromName;
@@ -128,6 +143,7 @@ in {
 
     services.portier-demo.instances = mergeMapEnvs (name: env: {
       "portier-demo-${name}" = {
+        package = env.demoPackage;
         port = env.demoPort;
         websiteUrl = "https://${env.demoVhost}";
         brokerUrl = "https://${env.brokerVhost}";

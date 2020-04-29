@@ -86,9 +86,19 @@ The procedure for setting up this server is:
    `configuration.nix` and adding the other files. Keep your generated
    `hardware-configuration.nix` as is.
 
- - Create `/etc/portier-broker/smtp-credentials.toml` containing just
-   `smtp_username` and `smtp_password`. We deliberately keep these outside of
-   the repository AND outside the world-readable Nix store.
+ - Create a directory for credentials: `mkdir -m 0700 /private`
+
+ - Create `/private/smtp-credentials.toml` containing just `smtp_username` and
+   `smtp_password`. We deliberately keep these outside of the repository AND
+   outside the world-readable Nix store.
+
+ - Create `/private/github-token.txt` containing just the GitHub personal
+   access token. This token is only used to access public data, so doesn't need
+   any special access.
+
+ - Create `/private/webhook-secret.txt` containing a random secret (something
+   like `pwgen -s 64`) used to protect the webhook calls for continuous
+   deployment.
 
  - Run `nixos-rebuild boot --upgrade` to build the configuration and apply it
    on next startup. (We can't apply it immediately, because we switch from
@@ -97,12 +107,5 @@ The procedure for setting up this server is:
  - Reboot.
 
  - Check that you can now login using your SSH key-pair as the `admin` user.
-
- - Protect the SMTP credentials:
-
-   ```
-   chown -R root:portier /etc/portier-broker
-   chmod -R o-rx /etc/portier-broker
-   ```
 
  - Check that all services are working properly.

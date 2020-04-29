@@ -3,7 +3,14 @@
 # The idea is that it should be possible to create a replica of the Portier
 # server anywhere, and only these settings would have to be adjusted.
 
-{ ... }:
+{ lib, pkgs, ... }:
+
+let
+  portier-broker-testing = if lib.hasAttr "portier-broker-testing." pkgs
+    then pkgs.portier-broker-testing else pkgs.portier-broker;
+  portier-demo-testing = if lib.hasAttr "portier-demo-testing." pkgs
+    then pkgs.portier-demo-testing else pkgs.portier-demo;
+in
 
 {
   boot.loader.grub.enable = true;
@@ -27,15 +34,19 @@
     acmeEmail = "staff@portier.io";
     fromAddress = "noreply@portier.io";
     smtpServer = "smtp.postmarkapp.com:25";
-    configFile = "/etc/portier-broker/smtp-credentials.toml";
+    configFile = "/private/smtp-credentials.toml";
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";
     environments = {
       staging = {
+        brokerPackage = portier-broker-testing;
         brokerPort = 20080;
-        demoPort = 20081;
         brokerVhost = "broker.staging.portier.io";
+        demoPackage = portier-demo-testing;
+        demoPort = 20081;
         demoVhost = "demo.staging.portier.io";
       };
     };
   };
+
+  webhook.virtualHost = "server.portier.io";
 }

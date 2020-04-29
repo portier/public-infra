@@ -12,8 +12,10 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    ./local-configuration.nix
+    ./portier/nixos
+    ./support/webhook
     ./support/portier-environments.nix
+    ./local-configuration.nix
   ];
 
   system.autoUpgrade = {
