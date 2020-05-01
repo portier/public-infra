@@ -30,6 +30,14 @@ in
 
   system.stateVersion = "20.03";
 
+  allowSshFrom = [
+    # "1.2.3.4"
+  ];
+
+  adminAuthorizedKeys = [
+    # "ssh-..."
+  ];
+
   portier = {
     acmeEmail = "staff@portier.io";
     fromAddress = "noreply@portier.io";

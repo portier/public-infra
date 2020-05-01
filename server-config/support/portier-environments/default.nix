@@ -2,7 +2,7 @@
 # for setting up multiple Portier environments. Each
 # environment contains a broker and a demo.
 
-{ config, lib, ... }:
+{ lib, config, ... }:
 
 with lib;
 
