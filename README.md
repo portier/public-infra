@@ -12,8 +12,8 @@ infrastructure run by the Portier project.
 
  - We host all applications on [Hetzner Cloud](https://www.hetzner.com/cloud),
    using a VM inside a 'Portier' project managed by staff. The server
-   configuration lives in `./server-config` in this repository. See
-   [./server-config/README.md] for details.
+   configuration lives in `./server-config` in this repository. See the
+   [README](./server-config/README.md) there for details.
 
  - We send outgoing mail using [Postmark], using an account managed by staff.
    All email tracking options are disabled. We also use the [Postmark DMARC]

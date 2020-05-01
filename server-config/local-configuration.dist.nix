@@ -6,9 +6,9 @@
 { lib, pkgs, ... }:
 
 let
-  portier-broker-testing = if lib.hasAttr "portier-broker-testing." pkgs
+  portier-broker-testing = if lib.hasAttr "portier-broker-testing" pkgs
     then pkgs.portier-broker-testing else pkgs.portier-broker;
-  portier-demo-testing = if lib.hasAttr "portier-demo-testing." pkgs
+  portier-demo-testing = if lib.hasAttr "portier-demo-testing" pkgs
     then pkgs.portier-demo-testing else pkgs.portier-demo;
 in
 
