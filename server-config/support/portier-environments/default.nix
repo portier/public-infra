@@ -2,7 +2,7 @@
 # for setting up multiple Portier environments. Each
 # environment contains a broker and a demo.
 
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 
 with lib;
 
@@ -73,6 +73,13 @@ let
   };
 
   environmentOptions = {
+    enableBroker = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether to enable the Portier broker service.
+      '';
+    };
     brokerPackage = mkOption {
       type = types.package;
       default = pkgs.portier-broker;
@@ -93,6 +100,13 @@ let
       default = "";
       description = ''
         The virtual host of the Portier broker.
+      '';
+    };
+    enableDemo = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether to enable the Portier demo service.
       '';
     };
     demoPackage = mkOption {
@@ -128,54 +142,66 @@ in {
     mergeMapEnvs = f: mkMerge (mapAttrsToList f cfg.environments);
   in {
 
-    services.portier-broker.instances = mergeMapEnvs (name: env: {
-      "portier-broker-${name}" = {
-        package = env.brokerPackage;
-        port = env.brokerPort;
-        publicUrl = "https://${env.brokerVhost}";
-        fromName = cfg.fromName;
-        fromAddress = cfg.fromAddress;
-        smtpServer = cfg.smtpServer;
-        googleClientId = cfg.googleClientId;
-        configFile = cfg.configFile;
-      };
-    });
+    services.portier-broker.instances = mergeMapEnvs (name: env:
+      optionalAttrs env.enableBroker {
+        "portier-broker-${name}" = {
+          package = env.brokerPackage;
+          port = env.brokerPort;
+          publicUrl = "https://${env.brokerVhost}";
+          fromName = cfg.fromName;
+          fromAddress = cfg.fromAddress;
+          smtpServer = cfg.smtpServer;
+          googleClientId = cfg.googleClientId;
+          configFile = cfg.configFile;
+        };
+      }
+    );
 
-    services.portier-demo.instances = mergeMapEnvs (name: env: {
-      "portier-demo-${name}" = {
-        package = env.demoPackage;
-        port = env.demoPort;
-        websiteUrl = "https://${env.demoVhost}";
-        brokerUrl = "https://${env.brokerVhost}";
-      };
-    });
+    services.portier-demo.instances = mergeMapEnvs (name: env:
+      optionalAttrs env.enableDemo {
+        "portier-demo-${name}" = {
+          package = env.demoPackage;
+          port = env.demoPort;
+          websiteUrl = "https://${env.demoVhost}";
+          brokerUrl = "https://${env.brokerVhost}";
+        };
+      }
+    );
 
-    services.nginx.virtualHosts = mergeMapEnvs (name: env: {
-      "${env.brokerVhost}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.brokerPort}";
-      };
-      "${env.demoVhost}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.demoPort}";
-      };
-    });
+    services.nginx.virtualHosts = mergeMapEnvs (name: env:
+      optionalAttrs env.enableBroker {
+        "${env.brokerVhost}" = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.brokerPort}";
+        };
+      } // optionalAttrs env.enableDemo {
+        "${env.demoVhost}" = {
+          enableACME = true;
+          forceSSL = true;
+          locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.demoPort}";
+        };
+      }
+    );
 
-    security.acme.certs = mergeMapEnvs (name: env: {
-      "${env.brokerVhost}" = {
-        email = cfg.acmeEmail;
-      };
-      "${env.demoVhost}" = {
-        email = cfg.acmeEmail;
-      };
-    });
+    security.acme.certs = mergeMapEnvs (name: env:
+      optionalAttrs env.enableBroker {
+        "${env.brokerVhost}" = {
+          email = cfg.acmeEmail;
+        };
+      } // optionalAttrs env.enableDemo {
+        "${env.demoVhost}" = {
+          email = cfg.acmeEmail;
+        };
+      }
+    );
 
     # This allows making the config file readable for all environments.
-    users.groups.portier = mergeMapEnvs (name: env: {
-      members = [ "portier-broker-${name}" ];
-    });
+    users.groups.portier = mergeMapEnvs (name: env:
+      optionalAttrs env.enableBroker {
+        members = [ "portier-broker-${name}" ];
+      }
+    );
 
   };
 
