@@ -88,9 +88,9 @@ The procedure for setting up this server is:
    `smtp_password`. We deliberately keep these outside of the repository AND
    outside the world-readable Nix store.
 
- - Create `/private/github-token.txt` containing just the GitHub personal
-   access token. This token is only used to access public data, so doesn't need
-   any special access.
+ - Create `/private/github-token.txt` containing just a GitHub personal access
+   token. This token should have the `public_repo` scope in order to download
+   artifacts.
 
  - Create `/private/webhook-secret.txt` containing a random secret (something
    like `pwgen -s 64`) used to protect the webhook calls for continuous

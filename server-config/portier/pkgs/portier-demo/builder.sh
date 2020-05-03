@@ -1,7 +1,7 @@
 export PATH="$coreutils/bin:$gnutar/bin:$gzip/bin:$python/bin"
 
 tar xvfz "$src"
-mv demo-rp-* "$out"
+mv *demo-rp* "$out"
 
 cd "$out"
 python -m compileall -f .
