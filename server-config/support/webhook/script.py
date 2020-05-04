@@ -16,14 +16,9 @@ from base64 import b64encode
 from os.path import basename
 from tempfile import TemporaryDirectory
 from textwrap import dedent
+from time import sleep
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
-
-# Default GitHub request headers.
-# The authentication token is added to this below.
-request_headers = {
-    'User-Agent': 'portier webhook'
-}
 
 def call_github(resource, body=None):
     """Make a request to the GitHub API."""
@@ -72,6 +67,12 @@ def extract_section(text, name):
     except ValueError:
         return ""
 
+# Delay for a little bit.
+#
+# We do this because we require successful completion of checks on GitHub,
+# but the webhook is also triggered at the end those checks.
+sleep(10)
+
 # Read the existing config.
 config_path = '/etc/nixos/support/webhook/generated.nix'
 try:
@@ -80,9 +81,12 @@ try:
 except FileNotFoundError:
     existing = ''
 
-# Grab the GitHub token.
+# Default GitHub request headers.
 with open('/private/github-token.txt', 'r') as f:
-    request_headers['Authorization'] = 'Bearer {}'.format(f.read().strip())
+    request_headers = {
+        'User-Agent': 'portier webhook',
+        'Authorization': 'Bearer {}'.format(f.read().strip())
+    }
 
 # Query latest commits.
 query = """\
@@ -150,7 +154,7 @@ if not broker_head['oid'] in broker_section:
             broker_section = dedent("""\
             # COMMIT: {oid}
             portier-broker-testing = derivation (self.portier-broker.drvAttrs // {{
-              name = "portier-broker-testing";
+              name = "portier-broker-{shorthash}";
 
               testsrc = self.fetchurl {{
                   url = "{zip_url}";
@@ -164,6 +168,7 @@ if not broker_head['oid'] in broker_section:
             }});
             """).format(
                 oid=broker_head['oid'],
+                shorthash=broker_head['oid'][:7],
                 zip_url=zip_url,
                 sri_hash=sri_hash
             )
@@ -181,7 +186,7 @@ if not demo_head['oid'] in demo_section:
     demo_section = dedent("""\
     # COMMIT: {oid}
     portier-demo-testing = derivation (self.portier-demo.drvAttrs // {{
-      name = "portier-demo-testing";
+      name = "portier-demo-{shorthash}";
 
       src = self.fetchurl {{
         url = "{tarball_url}";
@@ -190,6 +195,7 @@ if not demo_head['oid'] in demo_section:
     }});
     """).format(
         oid=demo_head['oid'],
+        shorthash=demo_head['oid'][:7],
         tarball_url=demo_head['tarballUrl'],
         sri_hash=sri_hash
     )
