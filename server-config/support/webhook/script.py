@@ -22,7 +22,7 @@ from urllib.request import Request, urlopen
 
 def call_github(resource, body=None):
     """Make a request to the GitHub API."""
-    url = 'https://api.github.com{}'.format(resource)
+    url = f'https://api.github.com{resource}'
     data = None
     headers = dict(request_headers)
     if body is not None:
@@ -35,7 +35,7 @@ def nix_download(url):
     """Download a GitHub file to the Nix store, and return the SRI hash."""
     filename = basename(urlparse(url).path)
     with TemporaryDirectory() as tmpdir:
-        filepath = "{}/{}".format(tmpdir, filename)
+        filepath = f'{tmpdir}/{filename}'
         with open(filepath, "wb") as tmpfile:
             with urlopen(Request(url, None, request_headers)) as download:
                 hasher = hashlib.sha256()
@@ -49,20 +49,20 @@ def nix_download(url):
             ['nix-store', '--add-fixed', 'sha256', filepath],
             check=True
         )
-    return "sha256-{}".format(b64encode(hasher.digest()).decode())
+    return 'sha256-' + b64encode(hasher.digest()).decode()
 
 def make_section(name, content):
     """Format a section containing multiline text."""
-    start = "### Begin section: {}".format(name)
-    end = "### End section: {}".format(name)
+    start = f"### Begin section: {name}"
+    end = f"### End section: {name}"
     return start + "\n" + content.strip() + "\n" + end + "\n"
 
 def extract_section(text, name):
     """Extract a section from multiline text."""
     lines = text.splitlines()
     try:
-        start = lines.index('### Begin section: {}'.format(name))
-        end = lines.index('### End section: {}'.format(name), start + 1)
+        start = lines.index(f'### Begin section: {name}')
+        end = lines.index(f'### End section: {name}', start + 1)
         return "\n".join(lines[start+1:end])
     except ValueError:
         return ""
@@ -85,7 +85,7 @@ except FileNotFoundError:
 with open('/private/github-token.txt', 'r') as f:
     request_headers = {
         'User-Agent': 'portier webhook',
-        'Authorization': 'Bearer {}'.format(f.read().strip())
+        'Authorization': 'Bearer ' + f.read().strip()
     }
 
 # Query latest commits.
@@ -119,8 +119,10 @@ response = call_github('/graphql', {'query': query})
 # add it to the store so we don't have to download it again.
 broker_head = response['data']['broker']['defaultBranchRef']['target']
 broker_section = extract_section(existing, "portier/portier-broker")
-if not broker_head['oid'] in broker_section:
-    print("Preparing deploy of portier/portier-broker {}".format(broker_head['oid']))
+if broker_head['oid'] in broker_section:
+    print('No change to portier/portier-broker')
+else:
+    print('Preparing deploy of portier/portier-broker ' + broker_head['oid'])
 
     runs_resource = (
         '/repos/portier/portier-broker/actions/workflows/build.yml/runs' +
@@ -137,7 +139,7 @@ if not broker_head['oid'] in broker_section:
         print("Could not find a successful workflow run")
     else:
         artifacts_resource = (
-            '/repos/portier/portier-broker/actions/runs/{}/artifacts'.format(run_id)
+            f'/repos/portier/portier-broker/actions/runs/{run_id}/artifacts'
         )
         artifacts = call_github(artifacts_resource)
         zip_url = next(
@@ -178,8 +180,10 @@ if not broker_head['oid'] in broker_section:
 # store so we don't have to download it again.
 demo_head = response['data']['demo']['defaultBranchRef']['target']
 demo_section = extract_section(existing, "portier/demo-rp")
-if not demo_head['oid'] in demo_section:
-    print("Preparing deploy of portier/demo-rp {}".format(demo_head['oid']))
+if demo_head['oid'] in demo_section:
+    print("No change to portier/demo-rp")
+else:
+    print("Preparing deploy of portier/demo-rp " + demo_head['oid'])
 
     sri_hash = nix_download(demo_head['tarballUrl'])
 
