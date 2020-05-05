@@ -81,8 +81,8 @@ let
       '';
     };
     smtpServer = mkOption {
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
       description = ''
         Hostname of the SMTP server used to send mails. (Required)
       '';
@@ -140,7 +140,7 @@ in {
           else null;
         BROKER_FROM_NAME = assert inst.fromName != null; inst.fromName;
         BROKER_FROM_ADDRESS = assert inst.fromAddress != null; inst.fromAddress;
-        BROKER_SMTP_SERVER = assert inst.smtpServer != null; inst.smtpServer;
+        BROKER_SMTP_SERVER = inst.smtpServer;
         BROKER_GOOGLE_CLIENT_ID = inst.googleClientId;
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };

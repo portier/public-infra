@@ -82,11 +82,13 @@ The procedure for setting up this server is:
    `configuration.nix` and adding the other files. Keep your generated
    `hardware-configuration.nix` as is.
 
- - Create a directory for credentials: `mkdir -m 0700 /private`
+ - Create a directory for credentials with `mkdir -m 0700 /private`. Only the
+   directory itself needs to have these permissions, not the files within. We
+   deliberately keep the contents outside the repository AND outside the
+   world-readable Nix store.
 
- - Create `/private/smtp-credentials.toml` containing just `smtp_username` and
-   `smtp_password`. We deliberately keep these outside of the repository AND
-   outside the world-readable Nix store.
+ - Create `/private/portier-mailer.toml` containing just the mailer settings.
+   For us, this is only `postmark_token`.
 
  - Create `/private/github-token.txt` containing just a GitHub personal access
    token. This token should have the `public_repo` scope in order to download
@@ -94,7 +96,8 @@ The procedure for setting up this server is:
 
  - Create `/private/webhook-secret.txt` containing a random secret (something
    like `pwgen -s 64`) used to protect the webhook calls for continuous
-   deployment.
+   deployment. These are added as secrets to the `portier-broker` and `demo-rp`
+   repositories and used to call the webhook from GitHub actions.
 
  - Run `nixos-rebuild boot --upgrade` to build the configuration and apply it
    on next startup. (We can't apply it immediately, because we switch from

@@ -41,8 +41,7 @@ in
   portier = {
     acmeEmail = "staff@portier.io";
     fromAddress = "noreply@portier.io";
-    smtpServer = "smtp.postmarkapp.com:25";
-    configFile = "/private/smtp-credentials.toml";
+    configFile = "/private/portier-mailer.toml";
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";
     environments = {
       production = {

@@ -31,8 +31,8 @@ let
       '';
     };
     smtpServer = mkOption {
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
       description = ''
         Hostname of the SMTP server used to send mails. (Required)
       '';
