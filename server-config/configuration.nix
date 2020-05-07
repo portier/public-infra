@@ -7,6 +7,9 @@
 
 {
   imports = [
+    <nixpkgs/nixos/modules/profiles/hardened.nix>
+    <nixpkgs/nixos/modules/profiles/headless.nix>
+    <nixpkgs/nixos/modules/profiles/minimal.nix>
     ./hardware-configuration.nix
     ./local-configuration.nix
     ./portier/nixos
@@ -25,7 +28,7 @@
   boot.loader.timeout = 3;
   boot.enableContainers = false;
   appstream.enable = false;
-  documentation.enable = false;
+  security.allowUserNamespaces = true;
 
   networking.useDHCP = false;
 
