@@ -38,6 +38,8 @@
 
   security.acme.acceptTerms = true;
 
+  services.chrony.enable = true;
+
   services.nginx = {
     enable = true;
     recommendedGzipSettings = true;
