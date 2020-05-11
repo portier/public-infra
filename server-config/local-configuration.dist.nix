@@ -45,7 +45,6 @@ in
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";
     environments = {
       production = {
-        enableBroker = false;
         brokerPort = 30080;
         brokerVhost = "broker.portier.io";
         demoPort = 30081;
