@@ -67,6 +67,7 @@ with lib;
     services.openssh = {
       enable = true;
       passwordAuthentication = false;
+      challengeResponseAuthentication = false;
       permitRootLogin = "no";
       openFirewall = false;
     };
