@@ -6,13 +6,15 @@
 { lib, pkgs, ... }:
 
 let
+
+  staffEmail = "staff@portier.io";
+
   portier-broker-testing = if lib.hasAttr "portier-broker-testing" pkgs
     then pkgs.portier-broker-testing else pkgs.portier-broker;
   portier-demo-testing = if lib.hasAttr "portier-demo-testing" pkgs
     then pkgs.portier-demo-testing else pkgs.portier-demo;
-in
 
-{
+in {
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
   boot.loader.grub.device = "/dev/sda";
@@ -38,8 +40,31 @@ in
     # "ssh-..."
   ];
 
+  services.nginx.virtualHosts = {
+    "server.portier.io" = {
+      enableACME = true;
+      forceSSL = true;
+      locations."/".return = "444";
+    };
+  };
+  security.acme.certs = {
+    "server.portier.io" = {
+      email = staffEmail;
+    };
+  };
+
+  webhook = {
+    virtualHost = "server.portier.io";
+  };
+
+  autotest = {
+    brokerOrigin = "https://broker.portier.io";
+    virtualHost = "server.portier.io";
+    testEmail = "INSERT_HASH_HERE@inbound.postmarkapp.com";
+  };
+
   portier = {
-    acmeEmail = "staff@portier.io";
+    acmeEmail = staffEmail;
     fromAddress = "noreply@portier.io";
     configFile = "/private/portier-mailer.toml";
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";
@@ -60,6 +85,4 @@ in
       };
     };
   };
-
-  webhook.virtualHost = "server.portier.io";
 }

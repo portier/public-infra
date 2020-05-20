@@ -1,4 +1,5 @@
 /server-config/hardware-configuration.nix
 /server-config/local-configuration.nix
-/server-config/support/webhook/server/target
+/server-config/support/autotest/server/target
 /server-config/support/webhook/generated.nix
+/server-config/support/webhook/server/target

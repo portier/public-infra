@@ -26,7 +26,6 @@ let
     '';
   };
 
-
 in {
 
   imports = optional (builtins.pathExists ./generated.nix) ./generated.nix;
@@ -36,7 +35,7 @@ in {
       type = types.str;
       default = "";
       description = ''
-        Nginx virtual host used to serve the webhook.
+        Name of an existing Nginx virtual host to add the /webhook location to.
       '';
     };
   };
@@ -85,15 +84,7 @@ in {
 
     services.nginx.virtualHosts = {
       "${config.webhook.virtualHost}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://127.0.0.1:29999";
-      };
-    };
-
-    security.acme.certs = {
-      "${config.webhook.virtualHost}" = {
-        email = config.portier.acmeEmail;
+        locations."/webhook".proxyPass = "http://127.0.0.1:29999";
       };
     };
 

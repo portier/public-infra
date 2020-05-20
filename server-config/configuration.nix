@@ -16,6 +16,7 @@
     ./support/security
     ./support/default-vhost
     ./support/webhook
+    ./support/autotest
     ./support/portier-environments
   ];
 

@@ -76,8 +76,10 @@ pub fn main() {
                 .find(|header| header.name.eq_ignore_ascii_case("Authorization"))
                 .filter(|header| header.value.starts_with(b"Bearer "))
                 .map(|header| &header.value[7..]);
-            let status_line = if req.method != Some("POST") || req.path != Some("/webhook") {
+            let status_line = if req.path != Some("/webhook") {
                 "400 Bad Request"
+            } else if req.method != Some("POST") {
+                "405 Method Not Allowed"
             } else if auth_header != Some(secret.as_bytes()) {
                 "401 Unauthorized"
             } else {
@@ -91,7 +93,10 @@ pub fn main() {
             };
 
             let res = format!("HTTP/1.1 {}\r\nConnection: close\r\n\r\n", status_line);
-            let _ = stream.write_all(res.as_bytes());
+            if let Err(_) = stream.write_all(res.as_bytes()) {
+                continue 'accept;
+            }
+
             break 'read;
         }
     }
