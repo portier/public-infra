@@ -4,6 +4,7 @@ with lib;
 
 let
 
+  socketPath = "/run/autotest-server.sock";
   secretFile = "/private/autotest-secret.txt";
 
   pythonPackages = pkgs: with pkgs; [ pyjwt cryptography ];
@@ -90,17 +91,27 @@ in {
       };
     };
 
+    systemd.sockets.autotest-server = {
+      description = "Autotest server";
+      wantedBy = [ "sockets.target" ];
+      listenStreams = [ socketPath ];
+    };
+
     systemd.services.autotest-server = {
       description = "Autotest server";
-      after = [ "network.target" ];
+
       wantedBy = [ "multi-user.target" ];
+      requires = [ "autotest-server.socket" ];
+      after = [ "autotest-server.socket" "network.target" ];
+
       environment = {
-        LISTEN_ADDR = "127.0.0.1:39999";
         SECRET_FILE = secretFile;
       };
+
       confinement = {
         enable = true;
       };
+
       serviceConfig = {
         ExecStart = "${server}/bin/autotest-server";
         User = "autotest";
@@ -109,19 +120,21 @@ in {
         RestartSec = 10;
 
         CapabilityBoundingSet = "";
+        IPAddressDeny = "any";
         LockPersonality = true;
         MemoryDenyWriteExecute = true;
         NoNewPrivileges = true;
+        PrivateNetwork = true;
         ProtectHome = true;
         ProtectHostname = true;
         RemoveIPC = true;
-        RestrictAddressFamilies = "AF_INET AF_INET6";
+        RestrictAddressFamilies = [ "AF_UNIX" "~AF_UNIX" ];
         RestrictNamespaces = true;
         RestrictRealtime = true;
         RestrictSUIDSGID = true;
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
-        SystemCallFilter = "@system-service";
+        SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
 
         BindReadOnlyPaths = [ secretFile ];
       };
@@ -129,7 +142,7 @@ in {
 
     services.nginx.virtualHosts = {
       "${config.autotest.virtualHost}" = {
-        locations."/autotest".proxyPass = "http://127.0.0.1:39999";
+        locations."/autotest".proxyPass = "http://unix:${socketPath}";
       };
     };
 

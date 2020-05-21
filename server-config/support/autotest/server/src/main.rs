@@ -9,12 +9,16 @@
 use httparse::{Request, Status, EMPTY_HEADER};
 use std::env;
 use std::io::{Read, Write};
-use std::net::{SocketAddr, TcpListener};
+use std::os::unix::{io::FromRawFd, net::UnixListener};
 
 pub fn main() {
-    let listen_addr = env::var("LISTEN_ADDR").expect("LISTEN_ADDR is required");
-    let secret_file = env::var("SECRET_FILE").expect("SECRET_FILE is required");
+    if env::var("LISTEN_PID") != Ok(format!("{}", std::process::id()))
+        || env::var("LISTEN_FDS") != Ok("1".to_owned())
+    {
+        panic!("Expected one file descriptor from the service manager")
+    }
 
+    let secret_file = env::var("SECRET_FILE").expect("SECRET_FILE is required");
     let secret = std::fs::read(secret_file).expect("Could not read SECRET_FILE");
     let secret = String::from_utf8(secret).expect("SECRET_FILE is not UTF-8");
     let secret = secret.trim();
@@ -22,8 +26,7 @@ pub fn main() {
     const BUF_LEN: usize = 65536;
     let mut last_post = Vec::with_capacity(BUF_LEN);
 
-    let listen_addr: SocketAddr = listen_addr.parse().expect("Invalid LISTEN_ADDR");
-    let listener = TcpListener::bind(listen_addr).expect("Could not bind socket");
+    let listener = unsafe { UnixListener::from_raw_fd(3) };
     'accept: loop {
         let (mut stream, _) = listener.accept().expect("Could not accept connection");
 
