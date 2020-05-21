@@ -61,11 +61,18 @@ in {
         TEST_ORIGIN = "https://${virtualHost}";
         TEST_EMAIL = testEmail;
         SECRET_FILE = secretFile;
+        SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+      };
+
+      confinement = {
+        enable = true;
+        packages = [ pkgs.cacert ];
       };
 
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${python}/bin/python ${./script.py}";
+        User = "autotest";
 
         LogsDirectory="autotest";
 
@@ -82,7 +89,7 @@ in {
         RestrictSUIDSGID = true;
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
-        SystemCallFilter = "@system-service";
+        SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
 
         BindReadOnlyPaths = [
           "/etc/resolv.conf"

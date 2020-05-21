@@ -137,7 +137,7 @@ in {
         RestrictSUIDSGID = true;
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
-        SystemCallFilter = "@system-service";
+        SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
 
         BindReadOnlyPaths = [ "/etc/resolv.conf" ];
       };
