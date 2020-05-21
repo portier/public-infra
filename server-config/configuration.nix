@@ -24,7 +24,11 @@
     enable = true;
     allowReboot = true;
   };
-  nix.gc.automatic = true;
+
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 7d";
+  };
 
   boot.loader.timeout = 3;
   boot.enableContainers = false;
