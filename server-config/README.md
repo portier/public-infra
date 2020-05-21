@@ -96,8 +96,18 @@ The procedure for setting up this server is:
 
  - Create `/private/webhook-secret.txt` containing a random secret (something
    like `pwgen -s 64`) used to protect the webhook calls for continuous
-   deployment. These are added as secrets to the `portier-broker` and `demo-rp`
-   repositories and used to call the webhook from GitHub actions.
+   deployment.
+
+ - Setup the GitHub secret `DEPLOY_WEBHOOK_SECRET` for the `portier-broker` and
+   `demo-rp` repositories, with the same contents as `webhook-secret.txt`.
+
+ - Create `/private/autotest-secret.txt` containing a random secret (something
+   like `pwgen -s 64`) used to protect the Postmark inbound webhook, used for
+   automated testing.
+
+ - Setup the Postmark inbound webhook to post to
+   `https://server.portier.io/autotest/<secret>`, where `<secret>` is the
+   contents of `autotest-secret.txt`.
 
  - Run `nixos-rebuild boot --upgrade` to build the configuration and apply it
    on next startup. (We can't apply it immediately, because we switch from
