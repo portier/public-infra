@@ -15,10 +15,10 @@ import subprocess
 from base64 import b64encode
 from os.path import basename
 from tempfile import TemporaryDirectory
-from textwrap import dedent
 from time import sleep
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+
 
 def call_github(resource, body=None):
     """Make a request to the GitHub API."""
@@ -30,6 +30,7 @@ def call_github(resource, body=None):
         headers['Content-Type'] = 'application/json'
     with urlopen(Request(url, data, headers)) as f:
         return json.loads(f.read())
+
 
 def nix_download(url):
     """Download a GitHub file to the Nix store, and return the SRI hash."""
@@ -51,11 +52,13 @@ def nix_download(url):
         )
     return 'sha256-' + b64encode(hasher.digest()).decode()
 
+
 def make_section(name, content):
     """Format a section containing multiline text."""
     start = f"### Begin section: {name}"
     end = f"### End section: {name}"
     return start + "\n" + content.strip() + "\n" + end + "\n"
+
 
 def extract_section(text, name):
     """Extract a section from multiline text."""
@@ -66,6 +69,7 @@ def extract_section(text, name):
         return "\n".join(lines[start+1:end])
     except ValueError:
         return ""
+
 
 # Delay for a little bit.
 #
@@ -143,7 +147,8 @@ else:
         )
         artifacts = call_github(artifacts_resource)
         zip_url = next(
-            (artifact['archive_download_url'] for artifact in artifacts['artifacts']
+            (artifact['archive_download_url']
+                for artifact in artifacts['artifacts']
                 if artifact['name'] == 'Linux binary (debug)'),
             None
         )
@@ -153,22 +158,22 @@ else:
         else:
             sri_hash = nix_download(zip_url)
 
-            broker_section = dedent("""\
-            # COMMIT: {oid}
-            portier-broker-testing = derivation (self.portier-broker.drvAttrs // {{
-              name = "portier-broker-{shorthash}";
+            broker_section = """\
+# COMMIT: {oid}
+portier-broker-testing = derivation (self.portier-broker.drvAttrs // {{
+  name = "portier-broker-{shorthash}";
 
-              testsrc = self.fetchurl {{
-                  url = "{zip_url}";
-                  hash = "{sri_hash}";
-              }};
+  testsrc = self.fetchurl {{
+      url = "{zip_url}";
+      hash = "{sri_hash}";
+  }};
 
-              inherit (self) unzip;
+  inherit (self) unzip;
 
-              builder = "${{self.bash}}/bin/bash";
-              args = [ "-e" ./build-testing-broker.sh ];
-            }});
-            """).format(
+  builder = "${{self.bash}}/bin/bash";
+  args = [ "-e" ./build-testing-broker.sh ];
+}});
+"""         .format(
                 oid=broker_head['oid'],
                 shorthash=broker_head['oid'][:7],
                 zip_url=zip_url,
@@ -187,17 +192,17 @@ else:
 
     sri_hash = nix_download(demo_head['tarballUrl'])
 
-    demo_section = dedent("""\
-    # COMMIT: {oid}
-    portier-demo-testing = derivation (self.portier-demo.drvAttrs // {{
-      name = "portier-demo-{shorthash}";
+    demo_section = """\
+# COMMIT: {oid}
+portier-demo-testing = derivation (self.portier-demo.drvAttrs // {{
+  name = "portier-demo-{shorthash}";
 
-      src = self.fetchurl {{
-        url = "{tarball_url}";
-        hash = "{sri_hash}";
-      }};
-    }});
-    """).format(
+  src = self.fetchurl {{
+    url = "{tarball_url}";
+    hash = "{sri_hash}";
+  }};
+}});
+""" .format(
         oid=demo_head['oid'],
         shorthash=demo_head['oid'][:7],
         tarball_url=demo_head['tarballUrl'],
@@ -222,4 +227,5 @@ let overlay = self: super: {{
 if output != existing:
     with open(config_path, 'w') as f:
         f.write(output)
-    os.execvp('nixos-rebuild', ['nixos-rebuild', 'switch', '--no-build-output'])
+    os.execvp('nixos-rebuild',
+              ['nixos-rebuild', 'switch', '--no-build-output'])
