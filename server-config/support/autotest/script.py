@@ -5,8 +5,8 @@ This code is based on the relying party demo code. It uses the JSON API of the
 Portier Broker and the Postmark webhook functionality to run through the full
 authentication process without a browser.
 
-A separate server stores the last received Postmark webhook. It is expected to
-be running at `localhost:39999`.
+A separate server stores the last received Postmark webhook. The code for this
+is in `./server/` and it must be started separately.
 """
 
 from base64 import urlsafe_b64decode
@@ -79,7 +79,7 @@ def run_test():
         raise RuntimeError(f"Unexpected auth response: {auth_data}")
 
     # Wait until the mail arrives.
-    inbox = 'http://localhost:39999/autotest/' + secret
+    inbox = test_origin + '/autotest/' + secret
     code_re = re.compile('^[a-z0-9]{6} [a-z0-9]{6}$', re.MULTILINE)
     stats['mail_start'] = time()
     for attempt in range(60):
