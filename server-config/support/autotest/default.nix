@@ -36,6 +36,7 @@ in {
     systemd.services.autotest = {
       description = "Autotest";
 
+      startAt = "*:0/5";
       restartIfChanged = false;
 
       environment = with config.autotest; {
