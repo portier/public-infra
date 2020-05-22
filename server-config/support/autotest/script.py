@@ -29,7 +29,7 @@ broker_origin = os.environ['BROKER_ORIGIN']
 test_origin = os.environ['TEST_ORIGIN']
 test_email = os.environ['TEST_EMAIL']
 secret_file = os.environ['SECRET_FILE']
-logs_directory = os.environ['LOGS_DIRECTORY']
+stats_file = os.environ['LOGS_DIRECTORY'] + '/stats.jsonl'
 
 # Read the secret file.
 with open(secret_file) as f:
@@ -159,7 +159,17 @@ if __name__ == '__main__':
     except:  # noqa: E722
         print_exc()
 
-    with open(logs_directory + '/stats.jsonl', 'a') as f:
-        f.write(json.dumps(stats) + '\n')
+    # Append the new stats line.
+    try:
+        with open(stats_file) as f:
+            lines = f.readlines()
+    except IOError:
+        lines = []
+    lines.append(json.dumps(stats) + '\n')
+
+    # Truncate and rewrite the stats file.
+    with open(stats_file + '.new', 'w') as f:
+        f.write(''.join(lines[-50:]))
+    os.rename(stats_file + '.new', stats_file)
 
     exit(int(not stats['ok']))
