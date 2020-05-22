@@ -12,7 +12,7 @@ is in `./server/` and it must be started separately.
 from base64 import urlsafe_b64decode
 from email.utils import parsedate_tz, mktime_tz
 from traceback import print_exc
-from time import time, sleep
+from time import perf_counter, time, sleep
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from uuid import uuid4
@@ -54,9 +54,9 @@ def jwk_to_rsa(key):
 
 def run_test():
     # Fetch the discovery document.
-    stats['discovery_start'] = time()
+    discovery_start_perf = perf_counter()
     res = urlopen(broker_origin + '/.well-known/openid-configuration')
-    stats['discovery_end'] = time()
+    stats['discovery'] = perf_counter() - discovery_start_perf
     discovery_data = json.loads(res.read().decode('utf-8'))
 
     # Start authorization.
@@ -70,9 +70,10 @@ def run_test():
         'client_id': test_origin,
         'redirect_uri': test_origin + '/autotest/verify',
     })
-    stats['auth_start'] = time()
+    auth_start_perf = perf_counter()
+    auth_start_time = time()
     res = urlopen(Request(url, headers={'Accept': 'application/json'}))
-    stats['auth_end'] = time()
+    stats['auth'] = perf_counter() - auth_start_perf
     auth_data = json.loads(res.read().decode('utf-8'))
 
     if auth_data.get('result') != 'verification_code_sent':
@@ -81,7 +82,7 @@ def run_test():
     # Wait until the mail arrives.
     inbox = test_origin + '/autotest/' + secret
     code_re = re.compile('^[a-z0-9]{6} [a-z0-9]{6}$', re.MULTILINE)
-    stats['mail_start'] = time()
+    mail_start_perf = perf_counter()
     for attempt in range(60):
         try:
             res = urlopen(inbox)
@@ -90,7 +91,7 @@ def run_test():
             # Look for the code. Also check the mail is recent.
             code_match = code_re.search(last_mail['TextBody'])
             mail_date = mktime_tz(parsedate_tz(last_mail['Date']))
-            if code_match and abs(mail_date - stats['auth_start']) < 300:
+            if code_match and abs(mail_date - auth_start_time) < 300:
                 break
         except json.JSONDecodeError:
             pass
@@ -98,7 +99,7 @@ def run_test():
         sleep(0.5)
     else:
         raise RuntimeError("Timeout waiting for verification mail")
-    stats['mail_end'] = time()
+    stats['mail'] = perf_counter() - mail_start_perf
 
     # Submit the code.
     url = broker_origin + '/confirm'
@@ -106,9 +107,9 @@ def run_test():
         'session': auth_data['session'],
         'code': code_match.group(0)
     }).encode('ascii')
-    stats['confirm_start'] = time()
+    confirm_start_perf = perf_counter()
     res = urlopen(Request(url, data, headers={'Accept': 'application/json'}))
-    stats['confirm_end'] = time()
+    stats['confirm'] = perf_counter() - confirm_start_perf
     confirm_data = json.loads(res.read().decode('utf-8'))
 
     token = confirm_data.get('id_token')
@@ -116,9 +117,9 @@ def run_test():
         raise RuntimeError(f"Unexpected confirm response: {confirm_data}")
 
     # Fetch and parse JWKs.
-    stats['jwks_start'] = time()
+    jwks_start_perf = perf_counter()
     res = urlopen(discovery_data['jwks_uri'])
-    stats['jwks_end'] = time()
+    stats['jwks'] = perf_counter() - jwks_start_perf
     jwks_data = json.loads(res.read().decode('utf-8'))
     keys = {key['kid']: jwk_to_rsa(key) for key in jwks_data['keys']
             if key['alg'] == 'RS256'}
