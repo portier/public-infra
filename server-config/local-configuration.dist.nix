@@ -44,7 +44,6 @@ in {
     "server.portier.io" = {
       enableACME = true;
       forceSSL = true;
-      locations."/".return = "444";
     };
   };
   security.acme.certs = {
@@ -60,7 +59,6 @@ in {
   autotest = {
     brokerOrigin = "https://broker.portier.io";
     virtualHost = "server.portier.io";
-    testEmail = "INSERT_HASH_HERE@inbound.postmarkapp.com";
   };
 
   portier = {
