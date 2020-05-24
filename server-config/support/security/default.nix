@@ -47,10 +47,10 @@ with lib;
 
         # Dynamic sets for HTTP rate limits.
         set http_meter_ipv4 {
-          type ipv4_addr; flags dynamic; size 65535;
+          type ipv4_addr; flags dynamic; size 65535; timeout 5s;
         }
         set http_meter_ipv6 {
-          type ipv6_addr; flags dynamic; size 65535;
+          type ipv6_addr; flags dynamic; size 65535; timeout 5s;
         }
 
         chain input {
@@ -72,7 +72,7 @@ with lib;
 
           # HTTP. Rate limit new connections. Count drops.
           tcp dport { http, https } ct state new add @http_meter_ipv4 { ip saddr limit rate over 100/second burst 50 packets } counter drop
-          tcp dport { http, https } ct state new add @http_meter_ipv6 { ip6 saddr and ffff:ffff:ffff:ffff:: limit rate over 100/second burst 50 packets } counter drop
+          tcp dport { http, https } ct state new add @http_meter_ipv6 { ip6 saddr & ffff:ffff:ffff:ffff:: limit rate over 100/second burst 50 packets } counter drop
           tcp dport { http, https } ct state new accept
         }
 
