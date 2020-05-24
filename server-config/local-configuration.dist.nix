@@ -32,6 +32,10 @@ in {
 
   system.stateVersion = "20.03";
 
+  unrestrictedAddresses = [
+    # "1.2.3.4"
+  ];
+
   adminAuthorizedKeys = [
     # "ssh-..."
   ];

@@ -6,6 +6,15 @@ with lib;
 
 {
   options = {
+    unrestrictedAddresses = mkOption {
+      type = with types; listOf str;
+      default = [];
+      description = ''
+        List of IPv4 or IPv6 addresses to exempt from rate limits, where
+        possible. This currently applies to SSH and HTTP connection rate
+        limits.
+      '';
+    };
     adminAuthorizedKeys = mkOption {
       type = with types; listOf str;
       default = [];
@@ -18,22 +27,53 @@ with lib;
   config = let
 
     sshPort = 57958;
+    sshPortStr = builtins.toString sshPort;
+
+    unrestrictedIpv4 = filter (hasInfix ".") config.unrestrictedAddresses;
+    unrestrictedIpv6 = filter (hasInfix ":") config.unrestrictedAddresses;
+
+    concatElements = concatStringsSep ", ";
+    makeElementsInit = list: if list != [] then "elements = { ${concatElements list} };" else "";
 
     ruleset = ''
       table inet filter {
+        # Sets containing unrestricted addresses.
+        set unrestricted_ipv4 {
+          type ipv4_addr; flags constant; ${makeElementsInit unrestrictedIpv4}
+        }
+        set unrestricted_ipv6 {
+          type ipv6_addr; flags constant; ${makeElementsInit unrestrictedIpv6}
+        }
+
+        # Dynamic sets for HTTP rate limits.
+        set http_meter_ipv4 {
+          type ipv4_addr; flags dynamic; size 65535;
+        }
+        set http_meter_ipv6 {
+          type ipv6_addr; flags dynamic; size 65535;
+        }
+
         chain input {
           type filter hook input priority 0; policy drop;
 
           iifname lo accept
           ct state { established, related } accept
 
-          ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
           ip protocol icmp icmp type { destination-unreachable, router-advertisement, time-exceeded, parameter-problem } accept
+          ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
 
-          tcp dport ${builtins.toString sshPort} ct state new limit rate 15/minute accept
+          # Unrestricted addresses.
+          ip saddr @unrestricted_ipv4 tcp dport { ${sshPortStr}, http, https } ct state new accept
+          ip6 saddr @unrestricted_ipv6 tcp dport { ${sshPortStr}, http, https } ct state new accept
 
-          tcp dport http accept
-          tcp dport https accept
+          # SSH. Rate limit new connections. Count drops and accepts.
+          tcp dport ${sshPortStr} ct state new limit rate over 15/minute counter drop
+          tcp dport ${sshPortStr} ct state new counter accept
+
+          # HTTP. Rate limit new connections. Count drops.
+          tcp dport { http, https } ct state new add @http_meter_ipv4 { ip saddr limit rate over 100/second burst 50 packets } counter drop
+          tcp dport { http, https } ct state new add @http_meter_ipv6 { ip6 saddr and ffff:ffff:ffff:ffff:: limit rate over 100/second burst 50 packets } counter drop
+          tcp dport { http, https } ct state new accept
         }
 
         chain output {
