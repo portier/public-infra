@@ -6,14 +6,6 @@ with lib;
 
 {
   options = {
-    allowSshFrom = mkOption {
-      type = with types; listOf str;
-      default = [];
-      description = ''
-        List of IPv4 or IPv6 addresses or subnets (in CIDR notation) to allow
-        SSH connections from.
-      '';
-    };
     adminAuthorizedKeys = mkOption {
       type = with types; listOf str;
       default = [];
@@ -25,9 +17,7 @@ with lib;
 
   config = let
 
-    sshRules = concatMapStrings (src:
-      "ip saddr ${src} tcp dport 22 accept\n"
-    ) config.allowSshFrom;
+    sshPort = 57958;
 
     ruleset = ''
       table inet filter {
@@ -40,7 +30,7 @@ with lib;
           ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
           ip protocol icmp icmp type { destination-unreachable, router-advertisement, time-exceeded, parameter-problem } accept
 
-          ${sshRules}
+          tcp dport ${builtins.toString sshPort} ct state new limit rate 15/minute accept
 
           tcp dport http accept
           tcp dport https accept
@@ -66,6 +56,7 @@ with lib;
 
     services.openssh = {
       enable = true;
+      ports = [ sshPort ];
       passwordAuthentication = false;
       challengeResponseAuthentication = false;
       permitRootLogin = "no";

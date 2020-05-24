@@ -32,10 +32,6 @@ in {
 
   system.stateVersion = "20.03";
 
-  allowSshFrom = [
-    # "1.2.3.4"
-  ];
-
   adminAuthorizedKeys = [
     # "ssh-..."
   ];
