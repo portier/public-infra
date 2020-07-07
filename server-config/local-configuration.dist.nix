@@ -3,16 +3,11 @@
 # The idea is that it should be possible to create a replica of the Portier
 # server anywhere, and only these settings would have to be adjusted.
 
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 
 let
 
   staffEmail = "staff@portier.io";
-
-  portier-broker-testing = if lib.hasAttr "portier-broker-testing" pkgs
-    then pkgs.portier-broker-testing else pkgs.portier-broker;
-  portier-demo-testing = if lib.hasAttr "portier-demo-testing" pkgs
-    then pkgs.portier-demo-testing else pkgs.portier-demo;
 
 in {
   boot.loader.grub.enable = true;
@@ -74,10 +69,10 @@ in {
         demoVhost = "demo.portier.io";
       };
       staging = {
-        brokerPackage = portier-broker-testing;
+        brokerPackage = pkgs.portier-broker-testing;
         brokerPort = 20080;
         brokerVhost = "broker.staging.portier.io";
-        demoPackage = portier-demo-testing;
+        demoPackage = pkgs.portier-demo-testing;
         demoPort = 20081;
         demoVhost = "demo.staging.portier.io";
       };

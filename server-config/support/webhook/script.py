@@ -1,23 +1,18 @@
 #!/usr/bin/env python38
 
 """
-Fetches the latest testing versions and builds a Nix expressions with package
-overrides to install them. Then rebuilds the system.
-
-The output file is a NixOS module that is automatically imported by the webhook
-module, if present.
+Fetches the latest testing versions, then rebuilds the system.
 """
 
-import hashlib
 import json
 import os
-import subprocess
-from base64 import b64encode
-from os.path import basename
+from shutil import copyfileobj
 from tempfile import TemporaryDirectory
 from time import sleep
-from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+
+
+downloads_path = '/etc/nixos/support/portier-testing/downloads'
 
 
 def call_github(resource, body=None):
@@ -32,43 +27,31 @@ def call_github(resource, body=None):
         return json.loads(f.read())
 
 
-def nix_download(url):
-    """Download a GitHub file to the Nix store, and return the SRI hash."""
-    filename = basename(urlparse(url).path)
+def download_file(filename, url):
+    """Download a GitHub file and place it in the downloads directory."""
     with TemporaryDirectory() as tmpdir:
         filepath = f'{tmpdir}/{filename}'
         with open(filepath, "wb") as tmpfile:
             with urlopen(Request(url, None, request_headers)) as download:
-                hasher = hashlib.sha256()
-                while True:
-                    chunk = download.read(65536)
-                    if not chunk:
-                        break
-                    hasher.update(chunk)
-                    tmpfile.write(chunk)
-        subprocess.run(
-            ['nix-store', '--add-fixed', 'sha256', filepath],
-            check=True
-        )
-    return 'sha256-' + b64encode(hasher.digest()).decode()
+                copyfileobj(download, tmpfile)
+        os.rename(filepath, f'{downloads_path}/{filename}')
 
 
-def make_section(name, content):
-    """Format a section containing multiline text."""
-    start = f"### Begin section: {name}"
-    end = f"### End section: {name}"
-    return start + "\n" + content.strip() + "\n" + end + "\n"
-
-
-def extract_section(text, name):
-    """Extract a section from multiline text."""
-    lines = text.splitlines()
+def check_oid(statefile, oid):
+    """Check if the git hash has changed, based on a state file."""
+    statepath = f'{downloads_path}/{statefile}'
     try:
-        start = lines.index(f'### Begin section: {name}')
-        end = lines.index(f'### End section: {name}', start + 1)
-        return "\n".join(lines[start+1:end])
-    except ValueError:
-        return ""
+        with open(statepath, 'r') as f:
+            return f.read() == oid
+    except FileNotFoundError:
+        return False
+
+
+def write_oid(statefile, oid):
+    """Write a state file containing the latest git hash."""
+    statepath = f'{downloads_path}/{statefile}'
+    with open(statepath, 'w') as f:
+        f.write(oid)
 
 
 # Delay for a little bit.
@@ -76,14 +59,6 @@ def extract_section(text, name):
 # We do this because we require successful completion of checks on GitHub,
 # but the webhook is also triggered at the end those checks.
 sleep(10)
-
-# Read the existing config.
-config_path = '/etc/nixos/support/webhook/generated.nix'
-try:
-    with open(config_path, 'r') as f:
-        existing = f.read()
-except FileNotFoundError:
-    existing = ''
 
 # Default GitHub request headers.
 with open('/private/github-token.txt', 'r') as f:
@@ -118,15 +93,16 @@ query = """\
 """
 response = call_github('/graphql', {'query': query})
 
+has_changes = False
+
 # If the commit hash appears in the existing section, we don't have to update.
 # Otherwise, fetch the latest build artifact so we can determine the hash, and
 # add it to the store so we don't have to download it again.
 broker_head = response['data']['broker']['defaultBranchRef']['target']
-broker_section = extract_section(existing, "portier/portier-broker")
-if broker_head['oid'] in broker_section:
+if check_oid('portier-broker-oid.txt', broker_head['oid']):
     print('No change to portier/portier-broker')
 else:
-    print('Preparing deploy of portier/portier-broker ' + broker_head['oid'])
+    print('Downloading new portier/portier-broker ' + broker_head['oid'])
 
     runs_resource = (
         '/repos/portier/portier-broker/actions/workflows/build.yml/runs' +
@@ -156,76 +132,23 @@ else:
         if zip_url is None:
             print("Could not find a Linux artifact for workflow run")
         else:
-            sri_hash = nix_download(zip_url)
-
-            broker_section = """\
-# COMMIT: {oid}
-portier-broker-testing = derivation (self.portier-broker.drvAttrs // {{
-  name = "portier-broker-{shorthash}";
-
-  testsrc = self.fetchurl {{
-      url = "{zip_url}";
-      hash = "{sri_hash}";
-  }};
-
-  inherit (self) unzip;
-
-  builder = "${{self.bash}}/bin/bash";
-  args = [ "-e" ./build-testing-broker.sh ];
-}});
-"""         .format(
-                oid=broker_head['oid'],
-                shorthash=broker_head['oid'][:7],
-                zip_url=zip_url,
-                sri_hash=sri_hash
-            )
+            download_file("portier-broker-testing.zip", zip_url)
+            write_oid('portier-broker-oid.txt', broker_head['oid'])
+            has_changes = True
 
 # If the commit hash appears in the existing section, we don't have to update.
 # Otherwise, fetch the file so we can determine the hash, and add it to the
 # store so we don't have to download it again.
 demo_head = response['data']['demo']['defaultBranchRef']['target']
-demo_section = extract_section(existing, "portier/demo-rp")
-if demo_head['oid'] in demo_section:
+if check_oid('portier-demo-oid.txt', demo_head['oid']):
     print("No change to portier/demo-rp")
 else:
-    print("Preparing deploy of portier/demo-rp " + demo_head['oid'])
+    print("Downloading new portier/demo-rp " + demo_head['oid'])
+    download_file("portier-demo-testing.tar.gz", demo_head['tarballUrl'])
+    write_oid('portier-demo-oid.txt', demo_head['oid'])
+    has_changes = True
 
-    sri_hash = nix_download(demo_head['tarballUrl'])
-
-    demo_section = """\
-# COMMIT: {oid}
-portier-demo-testing = derivation (self.portier-demo.drvAttrs // {{
-  name = "portier-demo-{shorthash}";
-
-  src = self.fetchurl {{
-    url = "{tarball_url}";
-    hash = "{sri_hash}";
-  }};
-}});
-""" .format(
-        oid=demo_head['oid'],
-        shorthash=demo_head['oid'][:7],
-        tarball_url=demo_head['tarballUrl'],
-        sri_hash=sri_hash
-    )
-
-# Build the final output.
-output = """\
-let overlay = self: super: {{
-
-{broker_section}\
-
-{demo_section}\
-
-}}; in {{ config.nixpkgs.overlays = [ overlay ]; }}
-""".format(
-    broker_section=make_section("portier/portier-broker", broker_section),
-    demo_section=make_section("portier/demo-rp", demo_section)
-)
-
-# If there were changes, write the config file and rebuild the system.
-if output != existing:
-    with open(config_path, 'w') as f:
-        f.write(output)
+# Apply changes.
+if has_changes:
     os.execvp('nixos-rebuild',
               ['nixos-rebuild', 'switch', '--no-build-output'])

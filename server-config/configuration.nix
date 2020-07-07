@@ -13,11 +13,12 @@
     ./hardware-configuration.nix
     ./local-configuration.nix
     ./portier/nixos
-    ./support/security
-    ./support/default-vhost
-    ./support/webhook
     ./support/autotest
+    ./support/default-vhost
     ./support/portier-environments
+    ./support/portier-testing
+    ./support/security
+    ./support/webhook
   ];
 
   system.autoUpgrade = {

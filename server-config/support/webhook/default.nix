@@ -28,8 +28,6 @@ let
 
 in {
 
-  imports = optional (builtins.pathExists ./generated.nix) ./generated.nix;
-
   options.webhook = {
     virtualHost = mkOption {
       type = types.str;
