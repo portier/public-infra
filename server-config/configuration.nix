@@ -28,6 +28,7 @@
   nix = {
     daemonNiceLevel = 5;
     daemonIONiceLevel = 5;
+    useSandbox = true;
   };
   nix.gc = {
     automatic = true;
