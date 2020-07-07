@@ -25,6 +25,10 @@
     allowReboot = true;
   };
 
+  nix = {
+    daemonNiceLevel = 5;
+    daemonIONiceLevel = 5;
+  };
   nix.gc = {
     automatic = true;
     options = "--delete-older-than 7d";
