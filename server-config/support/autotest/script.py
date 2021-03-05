@@ -264,6 +264,8 @@ if __name__ == '__main__':
     has_next_key = exists(next_key_file)
 
     if not has_current_key and has_next_key:
+        # Rename and update mtime, so the key doesn't expire immediately.
+        os.utime(next_key_file)
         os.rename(next_key_file, current_key_file)
         has_current_key = True
         has_next_key = False
