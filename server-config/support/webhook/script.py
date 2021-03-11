@@ -120,7 +120,8 @@ else:
                 break
 
         # Delay between requests.
-        sleep(10)
+        if in_progress:
+            sleep(10)
 
     if run_id is None:
         print("Could not find the workflow run for this commit")
