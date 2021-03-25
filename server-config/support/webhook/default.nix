@@ -11,7 +11,7 @@ let
   server = pkgs.rustPlatform.buildRustPackage {
     name = "webhook-server";
     src = ./server;
-    cargoSha256 = "0yc932p6mj4l9i9qqkn8pgq2p6wpz0hch606vagb9a1c4h36ilcx";
+    cargoSha256 = "0zp0cccpg4vfa5aa37g4599hkiskvc8l2kp00r04m9gy6jqzrigd";
     doCheck = false;
   };
 
