@@ -58,4 +58,7 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
   };
+
+  # The hardened profile sets scudo, but it causes instability.
+  environment.memoryAllocator.provider = "libc";
 }
