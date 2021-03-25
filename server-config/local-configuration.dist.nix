@@ -16,7 +16,7 @@ in {
 
   time.timeZone = "UTC";
 
-  networking.hostName = "server.portier.io";
+  networking.hostName = "public-portier";
   networking.defaultGateway6 = { address = "fe80::1"; interface = "ens3"; };
   networking.interfaces.ens3 = {
     useDHCP = true;
@@ -25,7 +25,7 @@ in {
     ];
   };
 
-  system.stateVersion = "20.03";
+  system.stateVersion = "20.09";
 
   unrestrictedAddresses = [
     # "1.2.3.4"
