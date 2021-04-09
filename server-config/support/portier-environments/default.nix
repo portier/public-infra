@@ -9,13 +9,6 @@ with lib;
 let
 
   moduleOptions = {
-    acmeEmail = mkOption {
-      type = types.str;
-      default = "";
-      description = ''
-        Email address to use for ACME registrations.
-      '';
-    };
     fromName = mkOption {
       type = types.str;
       default = "Portier";
@@ -180,18 +173,6 @@ in {
           enableACME = true;
           forceSSL = true;
           locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.demoPort}";
-        };
-      }
-    );
-
-    security.acme.certs = mergeMapEnvs (name: env:
-      optionalAttrs env.enableBroker {
-        "${env.brokerVhost}" = {
-          email = cfg.acmeEmail;
-        };
-      } // optionalAttrs env.enableDemo {
-        "${env.demoVhost}" = {
-          email = cfg.acmeEmail;
         };
       }
     );

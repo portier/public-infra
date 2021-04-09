@@ -18,6 +18,7 @@
     ./support/portier-environments
     ./support/portier-testing
     ./support/security
+    ./support/prometheus
     ./support/webhook
   ];
 
@@ -46,8 +47,6 @@
   environment.systemPackages = with pkgs; [
     vim
   ];
-
-  security.acme.acceptTerms = true;
 
   services.chrony.enable = true;
 

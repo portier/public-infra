@@ -3,13 +3,7 @@
 # The idea is that it should be possible to create a replica of the Portier
 # server anywhere, and only these settings would have to be adjusted.
 
-{ pkgs, ... }:
-
-let
-
-  staffEmail = "staff@portier.io";
-
-in {
+{ pkgs, ... }: {
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
   boot.loader.grub.device = "/dev/sda";
@@ -41,10 +35,10 @@ in {
       forceSSL = true;
     };
   };
-  security.acme.certs = {
-    "server.portier.io" = {
-      email = staffEmail;
-    };
+
+  security.acme = {
+    acceptTerms = true;
+    email = "staff@portier.io";
   };
 
   webhook = {
@@ -56,8 +50,11 @@ in {
     virtualHost = "server.portier.io";
   };
 
+  prometheus = {
+    virtualHost = "prometheus.portier.io";
+  };
+
   portier = {
-    acmeEmail = staffEmail;
     fromAddress = "noreply@portier.io";
     configFile = "/private/portier-mailer.toml";
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";

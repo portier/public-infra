@@ -21,7 +21,7 @@
     '';
   };
 
-  services.nginx.virtualHosts.localhost = {
+  services.nginx.virtualHosts.default = {
     default = true;
     addSSL = true;
     sslCertificate = "/etc/ssl/private/snake-oil.crt";
