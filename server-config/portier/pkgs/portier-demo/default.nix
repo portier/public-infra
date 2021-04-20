@@ -10,8 +10,8 @@ derivation {
   system = builtins.currentSystem;
 
   src = fetchurl {
-    url = "https://github.com/portier/demo-rp/archive/577310e9fe47da59a8d49064dd56efa6141243b4.tar.gz";
-    hash = "sha256-wvL9TyTzRfkAN6KiYZ9qX0ijGpcksUB3FBhl2IBJhvo=";
+    url = "https://github.com/portier/demo-rp/archive/403b4c8ea9d7106a6aa53661785196e5a2aa4de9.tar.gz";
+    hash = "sha256-QRdywymZFqQhVjM52Fiu0qKNCoHd2y4H5/9NcjsRM9A=";
   };
 
   inherit coreutils gnutar gzip;
