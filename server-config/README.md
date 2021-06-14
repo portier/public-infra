@@ -1,6 +1,6 @@
 # Portier project server configuration
 
-This directory contains the [NixOS](https://nixos.org) 20.09 configuration for
+This directory contains the [NixOS](https://nixos.org) 21.05 configuration for
 the server run by the Portier project.
 
 We use NixOS for several reasons:
@@ -37,7 +37,7 @@ The procedure for setting up this server is:
 
 - Update DNS records for the broker and demo to point to the new server IPs.
 
-- In the Hetzner Cloud console, go to 'ISO Images' and mount NixOS 20.09.
+- In the Hetzner Cloud console, go to 'ISO Images' and mount NixOS 21.05.
 
 - Go to 'Power' and perform a power cycle.
 
@@ -71,10 +71,10 @@ The procedure for setting up this server is:
 - Check that you can SSH into the server as `root`, with the password you
   entered during `nixos-install`.
 
-- Switch to the `nixos-20.09-small` channel:
+- Switch to the `nixos-21.05-small` channel:
 
   ```
-  nix-channel --add https://nixos.org/channels/nixos-20.09-small nixos
+  nix-channel --add https://nixos.org/channels/nixos-21.05-small nixos
   nix-channel --update
   ```
 
