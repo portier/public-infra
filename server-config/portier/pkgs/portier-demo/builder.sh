@@ -1,4 +1,4 @@
-export PATH="$coreutils/bin:$gnutar/bin:$gzip/bin:$python/bin"
+source $stdenv/setup
 
 tar xvfz "$src"
 mv *demo-rp* "$out"
