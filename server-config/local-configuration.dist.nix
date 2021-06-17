@@ -21,10 +21,6 @@
 
   system.stateVersion = "21.05";
 
-  unrestrictedAddresses = [
-    # "1.2.3.4"
-  ];
-
   adminAuthorizedKeys = [
     # "ssh-..."
   ];
