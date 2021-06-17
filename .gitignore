@@ -2,3 +2,4 @@
 /server-config/support/portier-testing/downloads/*
 !/server-config/support/portier-testing/downloads/.keep
 /server-config/support/webhook/server/target
+/result

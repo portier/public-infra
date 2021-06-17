@@ -28,4 +28,4 @@ jobs:
 
     - name: Build
       run: |
-        nix build './#nixosConfigurations.public-portier.config.system.build.toplevel'
+        nix build -vL
