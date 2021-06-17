@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2.3.4
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v13
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/g5wb6882xaw11m5ygq2k9l6mqi6jalqa/install
+        install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Cachix
+      uses: cachix/cachix-action@v10
+      with:
+        name: portier
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+    - name: Build
+      run: |
+        nix build './#nixosConfigurations.public-portier.config.system.build.toplevel'
