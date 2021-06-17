@@ -15,16 +15,18 @@
   networking.interfaces.ens3 = {
     useDHCP = true;
     ipv6.addresses = [
-      { address = "1:2:3:4::1"; prefixLength = 64; }
+      { address = "2a01:4f8:c0c:c91c::1"; prefixLength = 64; }
     ];
   };
 
-  system.stateVersion = "21.05";
+  # Should be the initial NixOS version the server was installed from.
+  system.stateVersion = "20.03";
 
   adminAuthorizedKeys = [
-    # "ssh-..."
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMXVHXBJXAb9rODD5ezABZQcshgsWiveJznbUeloFD9G stephank"
   ];
 
+  # Misc vhost used for the webhook and autotest.
   services.nginx.virtualHosts = {
     "server.portier.io" = {
       enableACME = true;
