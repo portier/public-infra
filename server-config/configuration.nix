@@ -3,13 +3,13 @@
 # This configures various system settings and imports other modules to do most
 # of the actual configuration.
 
-{ pkgs, ... }:
+{ pkgs, modulesPath, ... }:
 
 {
   imports = [
-    <nixpkgs/nixos/modules/profiles/hardened.nix>
-    <nixpkgs/nixos/modules/profiles/headless.nix>
-    <nixpkgs/nixos/modules/profiles/minimal.nix>
+    "${modulesPath}/profiles/hardened.nix"
+    "${modulesPath}/profiles/headless.nix"
+    "${modulesPath}/profiles/minimal.nix"
     ./hardware-configuration.nix
     ./local-configuration.nix
     ./portier/nixos
