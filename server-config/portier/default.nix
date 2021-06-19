@@ -1,4 +1,4 @@
-# Nixpkgs overlay containing Portier packages and dependencies.
+# Nixpkgs overlay containing Portier packages.
 
 self: super:
 

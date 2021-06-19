@@ -1,0 +1,23 @@
+name: find-green-download
+description: Finds the download URL of a project once its latest commit is green
+inputs:
+  token:
+    description: GitHub API OAuth token
+    required: true
+  owner:
+    description: Owner of the repository to check
+    required: true
+  repo:
+    description: Name of the repository to check
+    required: true
+  artifact:
+    description: Name of the artifact to look for
+    required: false
+outputs:
+  tarball_url:
+    description: Source code tarball URL
+  artifact_url:
+    description: Artifact ZIP download URL
+runs:
+  using: node12
+  main: dist/index.js

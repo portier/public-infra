@@ -13,10 +13,10 @@
     ./hardware-configuration.nix
     ./local-configuration.nix
     ./portier/nixos
+    ./portier-testing/nixos
     ./support/autotest
     ./support/default-vhost
     ./support/portier-environments
-    ./support/portier-testing
     ./support/security
     ./support/prometheus
     ./support/webhook

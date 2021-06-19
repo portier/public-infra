@@ -1,0 +1,15 @@
+{
+  "name": "debug-broker",
+  "version": "0.0.0",
+  "license": "(MIT OR Apache-2.0)",
+  "private": true,
+  "main": "lib/index.js",
+  "devDependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0",
+    "@vercel/ncc": "^0.28.6"
+  },
+  "scripts": {
+    "build": "ncc build"
+  }
+}
