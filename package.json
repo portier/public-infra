@@ -4,7 +4,7 @@
     ".github/actions/find-green-download"
   ],
   "scripts": {
-    "build:find-green-download": "cd .github/actions/find-green-download && yarn build",
-    "build": "yarn build:find-green-download"
+    "build:actions": "yarn build:find-green-download",
+    "build:find-green-download": "cd .github/actions/find-green-download && yarn build"
   }
 }
