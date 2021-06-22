@@ -1,0 +1,52 @@
+name: update flakes
+concurrency: update_flakes
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: '0 4 * * *'
+
+jobs:
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2.3.4
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v13
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/g5wb6882xaw11m5ygq2k9l6mqi6jalqa/install
+        install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Update lockfile
+      id: update_lockfile
+      run: |
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+
+        old_ref="$(git rev-parse HEAD)"
+        nix flake update --commit-lock-file
+        new_ref="$(git rev-parse HEAD)"
+
+        if [[ "$new_ref" == "$old_ref" ]]; then
+          echo "flake.lock is unchanged"
+        else
+          echo "::set-output name=did_change::1"
+        fi
+
+    - name: Push
+      if: ${{ steps.update_lockfile.outputs.did_change }}
+      run: |
+        git pull --rebase
+        git push origin main
+
+    - name: Start build
+      if: ${{ steps.update_lockfile.outputs.did_change }}
+      run: gh workflow run build.yml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
