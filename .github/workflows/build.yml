@@ -1,14 +1,21 @@
 name: build
+concurrency: build-${{ github.ref }}
 
 on:
-  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_run:
+    types: [completed]
+    workflows:
+    - update flakes
+    - update testing broker
+    - update testing demo
 
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
 
@@ -40,5 +47,21 @@ jobs:
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: Build
+      id: build
       run: |
         nix build -vL
+        echo "::set-output name=store_path::$(readlink result)"
+
+    - name: Deploy
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        jq -n '{
+          ref: "main",
+          required_contexts: [],
+          payload: {
+            storePath: "${{ steps.build.outputs.store_path }}"
+          }
+        }' \
+          | gh api 'repos/{owner}/{repo}/deployments' --input -
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

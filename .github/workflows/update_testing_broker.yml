@@ -60,9 +60,3 @@ jobs:
       run: |
         git pull --rebase
         git push origin main
-
-    - name: Start build
-      if: ${{ steps.check_url.outputs.did_change }}
-      run: gh workflow run build.yml
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
