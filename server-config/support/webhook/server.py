@@ -69,7 +69,7 @@ def do_deploy(statuses_url, target_system):
     post_status(statuses_url, "in_progress", "preparing")
     # Download the build.
     subprocess.run([
-        "nix-store",
+        "/run/current-system/sw/bin/nix-store",
         "--realise", target_system,
         "--add-root", "/nix/var/nix/gcroots/webhook-build",
     ], check=True)
@@ -84,7 +84,8 @@ def do_deploy(statuses_url, target_system):
     # is restarted. Don't check exit code, because the subprocess is now
     # responsible for status updates.
     subprocess.run([
-        "systemd-run", "--quiet", "--wait", "--collect",
+        "/run/current-system/sw/bin/systemd-run",
+        "--quiet", "--wait", "--collect",
         "--unit=activate-deployment",
         sys.argv[0], "__activate", statuses_url, target_system,
     ])
@@ -96,7 +97,7 @@ def do_activate(statuses_url, target_system):
     try:
         # Update the 'system' profile.
         subprocess.run([
-            "nix-env",
+            "/run/current-system/sw/bin/nix-env",
             "--profile", "/nix/var/nix/profiles/system",
             "--set", target_system,
         ], check=True)
