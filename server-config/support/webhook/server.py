@@ -1,4 +1,4 @@
-#!/usr/bin/env python38
+#!/usr/bin/env python3
 
 """Simple webhook server that performs deployments."""
 
