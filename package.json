@@ -1,10 +1,12 @@
 {
   "private": true,
   "workspaces": [
+    ".github/actions/deploy-on-success",
     ".github/actions/find-green-download"
   ],
   "scripts": {
-    "build:actions": "yarn build:find-green-download",
+    "build:actions": "yarn build:deploy-on-success && yarn build:find-green-download",
+    "build:deploy-on-success": "cd .github/actions/deploy-on-success && yarn build",
     "build:find-green-download": "cd .github/actions/find-green-download && yarn build"
   }
 }

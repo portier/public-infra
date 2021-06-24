@@ -1,3 +1,6 @@
+// This action helps us find the correct download for
+// the broker and demo staging deploys.
+
 const core = require("@actions/core");
 
 const octokit = require("@actions/github").getOctokit(core.getInput("token"));

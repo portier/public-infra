@@ -1,0 +1,11 @@
+name: deploy-on-success
+description: Create a deployment on success
+inputs:
+  token:
+    description: GitHub API OAuth token
+    required: true
+runs:
+  using: node12
+  main: dist/index.js
+  post: dist/index.js
+  post-if: success()

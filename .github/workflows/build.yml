@@ -22,6 +22,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2.3.4
 
+    - name: Deploy on success
+      uses: ./.github/actions/deploy-on-success
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Prepare Nix auth
       run: |
         sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
@@ -47,21 +52,6 @@ jobs:
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: Build
-      id: build
       run: |
         nix build -vL
-        echo "::set-output name=store_path::$(readlink result)"
-
-    - name: Deploy
-      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-      run: |
-        jq -n '{
-          ref: "main",
-          required_contexts: [],
-          payload: {
-            store_path: "${{ steps.build.outputs.store_path }}"
-          }
-        }' \
-          | gh api 'repos/{owner}/{repo}/deployments' --input -
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        echo "DEPLOY_STORE_PATH=$(readlink result)" >> $GITHUB_ENV
