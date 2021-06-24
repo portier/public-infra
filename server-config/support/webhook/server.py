@@ -5,6 +5,7 @@
 import os
 import requests
 import subprocess
+import sys
 import threading
 from flask import Flask
 from github_webhook import Webhook
@@ -25,6 +26,14 @@ next_deployment = None
 next_deployment_cv = threading.Condition()
 
 
+def post_status(url, state, description=""):
+    """Send a POST request to update deployment status."""
+
+    res = gh.post(url, json={"state": state, "description": description})
+    if res.status_code != 201:
+        print(f"Could not set status: HTTP {res.status_code}", file=sys.stderr)
+
+
 def deploy_loop():
     """Thread entry-point that runs a loop dispatching deployments."""
 
@@ -41,8 +50,8 @@ def deploy_loop():
         try:
             do_deploy(statuses_url, target_system)
         except Exception as exc:
-            print(exc)
-            gh.post(statuses_url, json={"state": "error"})
+            print(exc, file=sys.stderr)
+            post_status(statuses_url, "error")
 
 
 def do_deploy(statuses_url, target_system):
@@ -50,17 +59,11 @@ def do_deploy(statuses_url, target_system):
 
     current_system = os.readlink("/run/current-system")
     if current_system == target_system:
-        gh.post(statuses_url, json={
-            "state": "success",
-            "description": "no change",
-        })
+        post_status(statuses_url, "success", "no change")
         return
 
-    print(f"== Preparing: {target_system}")
-    gh.post(statuses_url, json={
-        "state": "in_progress",
-        "description": "preparing",
-    })
+    print(f"== Preparing: {target_system}", file=sys.stderr)
+    post_status(statuses_url, "in_progress", "preparing")
     # Download the build.
     subprocess.run([
         "nix-store",
@@ -72,11 +75,8 @@ def do_deploy(statuses_url, target_system):
         if next_deployment:
             return
 
-    print(f"== Activating: {target_system}")
-    gh.post(statuses_url, json={
-        "state": "in_progress",
-        "description": "activating",
-    })
+    print(f"== Activating: {target_system}", file=sys.stderr)
+    post_status(statuses_url, "in_progress", "activating")
     # Update the 'system' profile.
     subprocess.run([
         "nix-env",
@@ -90,7 +90,7 @@ def do_deploy(statuses_url, target_system):
         "/nix/var/nix/profiles/system/bin/switch-to-configuration", "switch",
     ], check=True)
 
-    gh.post(statuses_url, json={"state": "success"})
+    post_status(statuses_url, "success")
 
 
 @webhook.hook(event_type="deployment")
