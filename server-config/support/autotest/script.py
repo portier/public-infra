@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python38
 """Script that performs a test of a Portier instance.
 
 This code is loosely based on the Relying Party demo code. It fakes a user

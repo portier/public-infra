@@ -4,8 +4,17 @@ with lib;
 
 let
 
-  pythonPackages = pkgs: with pkgs; [ pyjwt cryptography ];
-  python = pkgs.python38.withPackages pythonPackages;
+  python = pkgs.python38.withPackages (pkgs: with pkgs; [
+    pyjwt cryptography
+  ]);
+
+  script = pkgs.runCommandLocal "autotest-script.py" {
+    buildInputs = [ python pkgs.python38Packages.flake8 ];
+  } ''
+    cp '${./script.py}' $out
+    flake8 --show-source $out
+    patchShebangs $out
+  '';
 
 in {
 
@@ -52,7 +61,7 @@ in {
 
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${python}/bin/python ${./script.py}";
+        ExecStart = script;
         User = "autotest";
 
         StateDirectory = "autotest";

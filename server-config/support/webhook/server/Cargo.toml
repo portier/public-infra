@@ -1,8 +1,0 @@
-[package]
-name = "webhook-server"
-version = "0.1.0"
-authors = ["The Portier project contributors"]
-edition = "2018"
-
-[dependencies]
-httparse = "1.3.4"
