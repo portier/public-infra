@@ -93,7 +93,7 @@ def do_deploy(statuses_url, target_system):
     gh.post(statuses_url, json={"state": "success"})
 
 
-@webhook.hook()
+@webhook.hook(event_type="deployment")
 def on_deployment(data):
     """GitHub 'deployment' event handler."""
 
