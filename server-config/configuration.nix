@@ -22,11 +22,6 @@
     ./support/webhook
   ];
 
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
-  };
-
   nix = {
     # Reduce daemon priority.
     daemonNiceLevel = 5;
