@@ -19,7 +19,10 @@ with open("/private/github-token.txt", "r") as f:
     gh = requests.Session()
     gh.headers.update({
         "Authorization": "token " + f.read().strip(),
-        "Accept": "application/vnd.github.v3+json",
+        "Accept": ", ".join([
+            "application/vnd.github.v3+json",
+            "application/vnd.github.flash-preview+json",
+        ])
     })
 
 next_deployment = None
