@@ -28,8 +28,10 @@
   };
 
   nix = {
+    # Reduce daemon priority.
     daemonNiceLevel = 5;
     daemonIONiceLevel = 5;
+    # Use our Cachix binary cache, filled by GitHub Actions.
     binaryCaches = [ "https://portier.cachix.org" ];
     binaryCachePublicKeys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
   };

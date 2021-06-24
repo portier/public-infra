@@ -6,7 +6,12 @@
 
     nixosConfigurations.public-portier = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [ ./server-config/configuration.nix ];
+      modules = [
+        # Main server configuration.
+        ./server-config/configuration.nix
+        # Set a NIX_PATH to match the system Nixpkgs, so e.g. nix-shell works.
+        ({ lib, ... }: { nix.nixPath = lib.mkForce [ "nixpkgs=${nixpkgs}" ]; })
+      ];
     };
 
     # For easy `nix build`.
