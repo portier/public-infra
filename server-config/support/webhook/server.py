@@ -28,8 +28,8 @@ next_deployment_cv = threading.Condition()
 def deploy_loop():
     """Thread entry-point that runs a loop dispatching deployments."""
 
-    nonlocal next_deployment
-    nonlocal next_deployment_cv
+    global next_deployment
+    global next_deployment_cv
 
     while True:
         with next_deployment_cv:
@@ -97,8 +97,8 @@ def do_deploy(statuses_url, target_system):
 def on_deployment(data):
     """GitHub 'deployment' event handler."""
 
-    nonlocal next_deployment
-    nonlocal next_deployment_cv
+    global next_deployment
+    global next_deployment_cv
 
     if data["action"] != "created":
         return
