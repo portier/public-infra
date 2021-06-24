@@ -132,8 +132,12 @@ def on_deployment(data):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "__activate":
-        do_activate(*sys.argv[2:])
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "__activate" and len(sys.argv) == 4:
+            do_activate(*sys.argv[2:])
+        else:
+            print(f"Usage: {sys.argv[0]}", file=sys.stderr)
+            sys.exit(64)
     else:
         threading.Thread(target=deploy_loop).start()
         app.run(host="127.0.0.1", port=29999)
