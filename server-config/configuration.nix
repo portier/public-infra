@@ -30,7 +30,8 @@
   nix = {
     daemonNiceLevel = 5;
     daemonIONiceLevel = 5;
-    useSandbox = true;
+    binaryCaches = [ "https://portier.cachix.org" ];
+    binaryCachePublicKeys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
   };
   nix.gc = {
     automatic = true;
