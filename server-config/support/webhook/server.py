@@ -80,20 +80,37 @@ def do_deploy(statuses_url, target_system):
 
     print(f"== Activating: {target_system}", file=sys.stderr)
     post_status(statuses_url, "in_progress", "activating")
-    # Update the 'system' profile.
-    subprocess.run([
-        "nix-env",
-        "--profile", "/nix/var/nix/profiles/system",
-        "--set", target_system,
-    ], check=True)
-    # Use systemd-run so if we are restarted, activation is not interrupted.
+    # Reinvoke self using systemd-run, so we're not interrupted if the server
+    # is restarted. Don't check exit code, because the subprocess is now
+    # responsible for status updates.
     subprocess.run([
         "systemd-run", "--quiet", "--wait", "--collect",
         "--unit=activate-deployment",
-        "/nix/var/nix/profiles/system/bin/switch-to-configuration", "switch",
-    ], check=True)
+        sys.argv[0], "__activate", statuses_url, target_system,
+    ])
 
-    post_status(statuses_url, "success")
+
+def do_activate(statuses_url, target_system):
+    """Activate a build. Invoked in a subprocess."""
+
+    try:
+        # Update the 'system' profile.
+        subprocess.run([
+            "nix-env",
+            "--profile", "/nix/var/nix/profiles/system",
+            "--set", target_system,
+        ], check=True)
+
+        # Run activation script.
+        subprocess.run([
+            "/nix/var/nix/profiles/system/bin/switch-to-configuration",
+            "switch",
+        ], check=True)
+    except Exception as exc:
+        print(exc, file=sys.stderr)
+        post_status(statuses_url, "error")
+    else:
+        post_status(statuses_url, "success")
 
 
 @webhook.hook(event_type="deployment")
@@ -114,5 +131,8 @@ def on_deployment(data):
 
 
 if __name__ == "__main__":
-    threading.Thread(target=deploy_loop).start()
-    app.run(host="127.0.0.1", port=29999)
+    if len(sys.argv) > 1 and sys.argv[1] == "__activate":
+        do_activate(*sys.argv[2:])
+    else:
+        threading.Thread(target=deploy_loop).start()
+        app.run(host="127.0.0.1", port=29999)
