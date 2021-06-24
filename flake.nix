@@ -1,6 +1,6 @@
 {
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-21.05-small";
+  inputs.nixpkgs.url = "nixpkgs/nixos-21.05";
 
   outputs = { self, nixpkgs }: rec {
 
