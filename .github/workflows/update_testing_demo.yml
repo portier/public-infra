@@ -34,7 +34,7 @@ jobs:
 
     - name: Download
       if: ${{ steps.check_url.outputs.did_change }}
-      run: curl -L -o artifact.zip '${{ steps.find_download.outputs.tarball_url }}'
+      run: curl -L -o source.tgz '${{ steps.find_download.outputs.tarball_url }}'
 
     - name: Modify config
       if: ${{ steps.check_url.outputs.did_change }}
