@@ -114,7 +114,7 @@ in {
         ];
       };
       serviceConfig = {
-        ExecStart = "${inst.package}/bin/portier-demo";
+        ExecStart = "${inst.package}/server.py";
         WorkingDirectory = inst.package;
         User = name;
 
