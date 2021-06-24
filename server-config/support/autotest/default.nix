@@ -4,12 +4,12 @@ with lib;
 
 let
 
-  python = pkgs.python38.withPackages (pkgs: with pkgs; [
+  python = pkgs.python39.withPackages (pkgs: with pkgs; [
     pyjwt cryptography
   ]);
 
   script = pkgs.runCommandLocal "autotest-script.py" {
-    buildInputs = [ python pkgs.python38Packages.flake8 ];
+    buildInputs = [ python pkgs.python39Packages.flake8 ];
   } ''
     cp '${./script.py}' $out
     flake8 --show-source $out
