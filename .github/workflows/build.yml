@@ -59,7 +59,7 @@ jobs:
           ref: "main",
           required_contexts: [],
           payload: {
-            storePath: "${{ steps.build.outputs.store_path }}"
+            store_path: "${{ steps.build.outputs.store_path }}"
           }
         }' \
           | gh api 'repos/{owner}/{repo}/deployments' --input -
