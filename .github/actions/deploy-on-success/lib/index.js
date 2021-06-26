@@ -11,15 +11,17 @@ async function run() {
     return;
   }
 
+  const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
+  const ref = process.env.GITHUB_SHA;
   const storePath = process.env.DEPLOY_STORE_PATH;
   if (!storePath) {
     throw Error("DEPLOY_STORE_PATH not set");
   }
 
   octokit.rest.repos.createDeployment({
-    owner: "portier",
-    repo: "public-infra",
-    ref: "main",
+    owner,
+    repo,
+    ref,
     payload: { store_path: storePath },
     required_contexts: [],
   });
