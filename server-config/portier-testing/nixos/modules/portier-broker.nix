@@ -87,6 +87,21 @@ in {
         You can create one of these at: https://console.cloud.google.com/
       '';
     };
+    verifyWithResolver = mkOption {
+      type = with types; nullOr str;
+      default = null;
+      description = ''
+        Optional DNS resolver to use to verify email domains.
+      '';
+    };
+    verifyPublicIp = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether the email domain must have a mail server with a public IP.
+        Requires verifyWithResolver to be set.
+      '';
+    };
     configFile = mkOption {
       type = types.str;
       default = "";
@@ -125,6 +140,8 @@ in {
         BROKER_FROM_ADDRESS = assert cfg.fromAddress != null; cfg.fromAddress;
         BROKER_SMTP_SERVER = cfg.smtpServer;
         BROKER_GOOGLE_CLIENT_ID = cfg.googleClientId;
+        BROKER_VERIFY_WITH_RESOLVER = cfg.verifyWithResolver;
+        BROKER_VERIFY_PUBLIC_IP = mkIf cfg.verifyPublicIp "true";
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
       confinement = {

@@ -19,6 +19,8 @@ in {
     enable = env.broker.enable;
     port = broker.port;
     publicUrl = "https://${env.broker.vhost}";
+    verifyWithResolver = "127.0.0.1:53";
+    verifyPublicIp = true;
     inherit (cfg) fromName fromAddress smtpServer googleClientId configFile;
   };
 

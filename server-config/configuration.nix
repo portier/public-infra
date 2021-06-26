@@ -17,8 +17,9 @@
     ./support/autotest
     ./support/default-vhost
     ./support/portier-environments
-    ./support/security
     ./support/prometheus
+    ./support/security
+    ./support/unbound
     ./support/webhook
   ];
 
