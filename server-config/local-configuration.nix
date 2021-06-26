@@ -56,21 +56,13 @@
     fromAddress = "noreply@portier.io";
     configFile = "/private/portier-mailer.toml";
     googleClientId = "288585393400-kbd02r4i35sfan68vri9sufkvkq87vt4.apps.googleusercontent.com";
-    environments = {
-      production = {
-        brokerPort = 30080;
-        brokerVhost = "broker.portier.io";
-        demoPort = 30081;
-        demoVhost = "demo.portier.io";
-      };
-      staging = {
-        brokerPackage = pkgs.portier-broker-testing;
-        brokerPort = 20080;
-        brokerVhost = "broker.staging.portier.io";
-        demoPackage = pkgs.portier-demo-testing;
-        demoPort = 20081;
-        demoVhost = "demo.staging.portier.io";
-      };
+    production = {
+      broker.vhost = "broker.portier.io";
+      demo.vhost = "demo.portier.io";
+    };
+    testing = {
+      broker.vhost = "broker.staging.portier.io";
+      demo.vhost = "demo.staging.portier.io";
     };
   };
 }

@@ -7,7 +7,7 @@ let
   # We maintain the module for testing as a copy of production, so we can
   # easily test module changes. This variable defines the basename of options
   # for this module. Using a variable allows easier diffing.
-  moduleName = "portier-demo";
+  moduleName = "portier-demo-testing";
 
   cfg = config.services.${moduleName};
 

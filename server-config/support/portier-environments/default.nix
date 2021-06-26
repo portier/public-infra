@@ -1,8 +1,8 @@
-# NixOS module that holds common configuration and logic
-# for setting up multiple Portier environments. Each
-# environment contains a broker and a demo.
+# NixOS module that ties together all the configuration for our Portier
+# installations. This is here mostly as a layer for common settings, and to add
+# nginx virtual hosts.
 
-{ lib, config, pkgs, ... }:
+{ lib, ... }:
 
 with lib;
 
@@ -49,75 +49,33 @@ let
         the file is readable only by the portier-broker user!
       '';
     };
-    environments = mkOption {
-      type = with types; attrsOf (submodule {
-        options = environmentOptions;
-      });
-      default = {};
-      description = ''
-        Definition of Portier environments.
-
-        Each attribute defined in this set creates an instance of the broker
-        named 'portier-broker-{attr}', an instance the demo application named
-        'portier-demo-{attr}', and Nginx virtual hosts with HTTPS enabled using
-        ACME.
-      '';
-    };
+    production = environmentOptions;
+    testing = environmentOptions;
   };
 
   environmentOptions = {
-    enableBroker = mkOption {
+    broker.enable = mkOption {
       type = types.bool;
       default = true;
       description = ''
         Whether to enable the Portier broker service.
       '';
     };
-    brokerPackage = mkOption {
-      type = types.package;
-      default = pkgs.portier-broker;
-      defaultText = "pkgs.portier-broker";
-      description = ''
-        The Portier broker package to use.
-      '';
-    };
-    brokerPort = mkOption {
-      type = types.port;
-      default = 3333;
-      description = ''
-        Specifies on which port the Portier broker listens.
-      '';
-    };
-    brokerVhost = mkOption {
+    broker.vhost = mkOption {
       type = types.str;
       default = "";
       description = ''
         The virtual host of the Portier broker.
       '';
     };
-    enableDemo = mkOption {
+    demo.enable = mkOption {
       type = types.bool;
       default = true;
       description = ''
         Whether to enable the Portier demo service.
       '';
     };
-    demoPackage = mkOption {
-      type = types.package;
-      default = pkgs.portier-demo;
-      defaultText = "pkgs.portier-demo";
-      description = ''
-        The Portier demo package to use.
-      '';
-    };
-    demoPort = mkOption {
-      type = types.port;
-      default = 8000;
-      description = ''
-        Specifies on which port the Portier demo listens.
-      '';
-    };
-    demoVhost = mkOption {
+    demo.vhost = mkOption {
       type = types.str;
       default = "";
       description = ''
@@ -128,62 +86,11 @@ let
 
 in {
 
+  imports = [
+    ./production.nix
+    ./testing.nix
+  ];
+
   options.portier = moduleOptions;
-
-  config = let
-    cfg = config.portier;
-    mergeMapEnvs = f: mkMerge (mapAttrsToList f cfg.environments);
-  in {
-
-    services.portier-broker.instances = mergeMapEnvs (name: env:
-      optionalAttrs env.enableBroker {
-        "portier-broker-${name}" = {
-          package = env.brokerPackage;
-          port = env.brokerPort;
-          publicUrl = "https://${env.brokerVhost}";
-          fromName = cfg.fromName;
-          fromAddress = cfg.fromAddress;
-          smtpServer = cfg.smtpServer;
-          googleClientId = cfg.googleClientId;
-          configFile = cfg.configFile;
-        };
-      }
-    );
-
-    services.portier-demo.instances = mergeMapEnvs (name: env:
-      optionalAttrs env.enableDemo {
-        "portier-demo-${name}" = {
-          package = env.demoPackage;
-          port = env.demoPort;
-          websiteUrl = "https://${env.demoVhost}";
-          brokerUrl = "https://${env.brokerVhost}";
-        };
-      }
-    );
-
-    services.nginx.virtualHosts = mergeMapEnvs (name: env:
-      optionalAttrs env.enableBroker {
-        "${env.brokerVhost}" = {
-          enableACME = true;
-          forceSSL = true;
-          locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.brokerPort}";
-        };
-      } // optionalAttrs env.enableDemo {
-        "${env.demoVhost}" = {
-          enableACME = true;
-          forceSSL = true;
-          locations."/".proxyPass = "http://127.0.0.1:${builtins.toString env.demoPort}";
-        };
-      }
-    );
-
-    # This allows making the config file readable for all environments.
-    users.groups.portier = mergeMapEnvs (name: env:
-      optionalAttrs env.enableBroker {
-        members = [ "portier-broker-${name}" ];
-      }
-    );
-
-  };
 
 }
