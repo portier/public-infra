@@ -35,6 +35,10 @@ in {
           static_configs = [ { targets = [ "127.0.0.1:9113" ]; } ];
         }
         {
+          job_name = "testbroker";
+          static_configs = [ { targets = [ "127.0.0.1:20080" ]; } ];
+        }
+        {
           job_name = "prometheus";
           static_configs = [ { targets = [ "127.0.0.1:9090" ]; } ];
         }
