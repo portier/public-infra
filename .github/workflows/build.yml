@@ -40,7 +40,7 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@v13
       with:
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/g5wb6882xaw11m5ygq2k9l6mqi6jalqa/install
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/6zr15z4wr2fv99k9vdvw64svpz7y4hv6/install
         install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
         extra_nix_config: |
           experimental-features = nix-command flakes
