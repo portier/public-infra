@@ -39,7 +39,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v13
+      uses: cachix/install-nix-action@v14
       with:
         install_url: https://nixos-nix-install-tests.cachix.org/serve/6zr15z4wr2fv99k9vdvw64svpz7y4hv6/install
         install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
