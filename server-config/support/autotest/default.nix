@@ -37,9 +37,13 @@ in {
 
   config = {
 
-    users.users.autotest = {
-      isSystemUser = true;
-      description = "Autotest";
+    users = {
+      groups.autotest = { };
+      users.autotest = {
+        isSystemUser = true;
+        group = "autotest";
+        description = "Autotest";
+      };
     };
 
     systemd.services.autotest = {

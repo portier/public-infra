@@ -72,9 +72,13 @@ in {
 
   config = {
 
-    users.users.${moduleName} = mkIf cfg.enable {
-      isSystemUser = true;
-      description = "Portier demo service";
+    users = mkIf cfg.enable {
+      groups.${moduleName} = { };
+      users.${moduleName} = {
+        isSystemUser = true;
+        group = moduleName;
+        description = "Portier demo service";
+      };
     };
 
     systemd.services.${moduleName} = mkIf cfg.enable {

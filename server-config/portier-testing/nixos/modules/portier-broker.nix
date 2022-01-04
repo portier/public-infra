@@ -117,9 +117,13 @@ in {
 
   config = {
 
-    users.users.${moduleName} = mkIf cfg.enable {
-      isSystemUser = true;
-      description = "Portier broker service";
+    users = mkIf cfg.enable {
+      groups.${moduleName} = { };
+      users.${moduleName} = {
+        isSystemUser = true;
+        group = moduleName;
+        description = "Portier broker service";
+      };
     };
 
     systemd.services.${moduleName} = mkIf cfg.enable {
