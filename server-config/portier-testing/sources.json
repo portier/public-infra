@@ -1,7 +1,7 @@
 {
   "broker": {
-    "url": "https://api.github.com/repos/portier/portier-broker/actions/artifacts/142624656/zip",
-    "sha256": "383f527fe09e3c6f4b165c3cf1fb5f1b309efef5b0f4d070ad92aeb19c1098cf"
+    "url": "https://api.github.com/repos/portier/portier-broker/actions/artifacts/143681174/zip",
+    "sha256": "42748e2bad1736c4239877f1d3ea35a13373412821abb4cbf78e9cba5ffc703f"
   },
   "demo": {
     "url": "https://codeload.github.com/portier/demo-rp/legacy.tar.gz/7538e9fbae59ade4dc3dde35b9e5e4f3773534cc",
