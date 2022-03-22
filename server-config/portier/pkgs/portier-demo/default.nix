@@ -10,8 +10,8 @@ in stdenv.mkDerivation {
   name = "portier-demo";
 
   src = fetchurl {
-    url = "https://github.com/portier/demo-rp/archive/7538e9fbae59ade4dc3dde35b9e5e4f3773534cc.tar.gz";
-    hash = "sha256-yXw1g9aw5DYIY2cDtspYV7kv3LjvfQT/+cJTU3JntQ4=";
+    url = "https://github.com/portier/demo-rp/archive/6d61103f7472afa2acd5ffb1d2b27dd1f9877c44.tar.gz";
+    hash = "sha256-Rr3H8MQ+ur+R2k1nSvUjeG2rY/xFXyrqOBdZ4YQzzmE=";
   };
 
   buildInputs = [ python ];
