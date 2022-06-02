@@ -48,6 +48,12 @@ jobs:
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: Build
+      run: nix build -vL
+
+    - name: Check result
       run: |
-        nix build -vL
-        echo "DEPLOY_STORE_PATH=$(readlink result)" >> $GITHUB_ENV
+        DEPLOY_STORE_PATH="$(readlink result)"
+        echo "Result: $DEPLOY_STORE_PATH"
+
+        # Used by deploy-on-success post step.
+        echo "DEPLOY_STORE_PATH=$DEPLOY_STORE_PATH" >> $GITHUB_ENV
