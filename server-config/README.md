@@ -19,16 +19,15 @@ Note that the configuration here may not be out-of-the-box suitable to apply to
 your own server, but we do try to isolate installation-specific details in
 `local-configuration.nix`.
 
-We run our server on [Hetzner Cloud](https://www.hetzner.com/cloud) on a
-CX11-CEPH instance (smallest configuration) in the Nuremberg data center. The
-instance uses CEPH storage, because we value reliability over performance.
+We run our server on [Hetzner Cloud](https://www.hetzner.com/cloud) on a CX11
+instance (smallest configuration) in the Nuremberg data center.
 
 The procedure for setting up this server is:
 
-- Create the CX11-CEPH instance from the Hetzner Cloud console. Use any OS
-  image for now, and leave the volume and network sections empty, but set a
-  (temporary) SSH key-pair if you want. Also give it a descriptive name. (We
-  prefer using the fully-qualified hostname.)
+- Create the CX11 instance from the Hetzner Cloud console. Use any OS image for
+  now, and leave the volume and network sections empty, but set a (temporary)
+  SSH key-pair if you want. Also give it a descriptive name. (We prefer using
+  the fully-qualified hostname.)
 
 - Update `local-configuration.nix` in the git repository, but don't commit or
   push these changes yet.
