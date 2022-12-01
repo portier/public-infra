@@ -1,12 +1,12 @@
 { fetchurl, bash, glibc, coreutils, gnutar, gzip, patchelf, openssl }:
 
 derivation {
-  name = "portier-broker-0.7.0";
+  name = "portier-broker-0.7.1";
   system = "x86_64-linux";
 
   src = fetchurl {
-    url = "https://github.com/portier/portier-broker/releases/download/v0.7.0/Portier-Broker-v0.7.0-Linux-x86_64.tgz";
-    hash = "sha256-UDY58bICl2gHuOMh4ObUFV6BsJ3507N2QfiU1+0V+N4=";
+    url = "https://github.com/portier/portier-broker/releases/download/v0.7.1/Portier-Broker-v0.7.1-Linux-x86_64.tgz";
+    sha256 = "1vpbs2l25blzmpkq8id5ng9rhfvyrc9qlifs9z8givgw3r05sp5d";
   };
 
   inherit glibc coreutils gnutar gzip patchelf;
