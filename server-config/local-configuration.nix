@@ -36,7 +36,7 @@
 
   security.acme = {
     acceptTerms = true;
-    email = "staff@portier.io";
+    defaults.email = "staff@portier.io";
   };
 
   webhook = {

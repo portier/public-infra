@@ -28,8 +28,10 @@
     daemonCPUSchedPolicy = "idle";
     daemonIOSchedClass = "idle";
     # Use our Cachix binary cache, filled by GitHub Actions.
-    binaryCaches = [ "https://portier.cachix.org" ];
-    binaryCachePublicKeys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
+    settings = {
+      substituters = [ "https://portier.cachix.org" ];
+      trusted-public-keys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
+    };
   };
   nix.gc = {
     automatic = true;

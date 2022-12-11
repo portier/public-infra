@@ -57,8 +57,8 @@ The procedure for setting up this server is:
     boot.loader.grub.device = "/dev/sda";
     services.openssh.enable = true;
     services.openssh.permitRootLogin = "yes";
-    nix.binaryCaches = [ "https://portier.cachix.org" ];
-    nix.binaryCachePublicKeys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
+    nix.settings.substituters = [ "https://portier.cachix.org" ];
+    nix.settings.trusted-public-keys = [ "portier.cachix.org-1:thI6UJMG/LFzmEGS8LExOlwwjSWvqsSeb/skVOCFbds=" ];
     ```
 
   - `nixos-install` will ask you to set a root password. This is a temporary
