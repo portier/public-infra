@@ -74,7 +74,7 @@ with lib;
       enable = true;
       ports = [ sshPort ];
       passwordAuthentication = false;
-      challengeResponseAuthentication = false;
+      kbdInteractiveAuthentication = false;
       permitRootLogin = "no";
       openFirewall = false;
     };
