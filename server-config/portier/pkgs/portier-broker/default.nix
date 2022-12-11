@@ -1,4 +1,4 @@
-{ fetchurl, bash, glibc, coreutils, gnutar, gzip, patchelf, openssl }:
+{ fetchurl, bash, glibc, coreutils, gnutar, gzip, patchelf, openssl_1_1 }:
 
 derivation {
   name = "portier-broker-0.7.1";
@@ -10,7 +10,7 @@ derivation {
   };
 
   inherit glibc coreutils gnutar gzip patchelf;
-  openssl = openssl.out;
+  openssl = openssl_1_1.out;
 
   builder = "${bash}/bin/bash";
   args = [ "-e" ./builder.sh ];
