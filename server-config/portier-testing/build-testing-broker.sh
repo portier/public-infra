@@ -1,4 +1,4 @@
-export PATH="$coreutils/bin:$gnutar/bin:$gzip/bin:$patchelf/bin:$unzip/bin"
+export PATH="$coreutils/bin:$gnutar/bin:$gzip/bin:$unzip/bin"
 
 tar xvfz "$src"
 mv Portier-Broker-* "$out"
