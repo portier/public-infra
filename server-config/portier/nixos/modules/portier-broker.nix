@@ -131,7 +131,6 @@ in {
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       environment = {
-        BROKER_GENERATE_RSA_COMMAND = "${pkgs.openssl}/bin/openssl genrsa 2048";
         BROKER_SQLITE_DB = "/var/lib/${moduleName}/db.sqlite3";
         BROKER_LISTEN_IP = "127.0.0.1";
         BROKER_LISTEN_PORT = builtins.toString cfg.port;
@@ -151,10 +150,7 @@ in {
       confinement = {
         enable = true;
         binSh = null;
-        packages = [
-          pkgs.openssl
-          pkgs.cacert
-        ];
+        packages = [ pkgs.cacert ];
       };
       serviceConfig = {
         ExecStart = "${cfg.package}/portier-broker ${cfg.configFile}";
