@@ -39,7 +39,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v20
+      uses: cachix/install-nix-action@v21
 
     - name: Cachix
       uses: cachix/cachix-action@v12
