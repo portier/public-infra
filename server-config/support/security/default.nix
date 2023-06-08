@@ -73,10 +73,12 @@ with lib;
     services.openssh = {
       enable = true;
       ports = [ sshPort ];
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-      permitRootLogin = "no";
       openFirewall = false;
+      settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+        PermitRootLogin = "no";
+      };
     };
 
     security.sudo.wheelNeedsPassword = false;
