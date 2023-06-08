@@ -61,4 +61,8 @@
 
   # The hardened profile sets scudo, but it causes instability.
   environment.memoryAllocator.provider = "libc";
+
+  # Additional terminfo packages.
+  environment.enableAllTerminfo = true;
+
 }
