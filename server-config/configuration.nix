@@ -65,4 +65,7 @@
   # Additional terminfo packages.
   environment.enableAllTerminfo = true;
 
+  # Override minimal profile. Setting this to true causes large rebuilds.
+  environment.noXlibs = false;
+
 }
