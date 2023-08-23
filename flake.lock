@@ -15,9 +15,53 @@
         "type": "indirect"
       }
     },
+    "portier-broker": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1687509492,
+        "narHash": "sha256-3Lgl496HrVD+vNWSJ2dVIhD5wyLnh/ABBnxB6ZBUcm0=",
+        "owner": "portier",
+        "repo": "portier-broker",
+        "rev": "67092975016740b6ce9e90d50360ac687eae06da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "portier",
+        "ref": "stable",
+        "repo": "portier-broker",
+        "type": "github"
+      }
+    },
+    "portier-broker-testing": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1692797798,
+        "narHash": "sha256-wbsMuYFxSzB9y0Fpfpflyg8vhIGef1SYMh3Qm3/RYw8=",
+        "owner": "portier",
+        "repo": "portier-broker",
+        "rev": "c6f52127b20fce771cf5f0d3d49765ae4b4ba2d5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "portier",
+        "ref": "main",
+        "repo": "portier-broker",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "portier-broker": "portier-broker",
+        "portier-broker-testing": "portier-broker-testing"
       }
     }
   },
