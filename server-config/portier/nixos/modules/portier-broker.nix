@@ -154,7 +154,6 @@ in {
       };
       serviceConfig = {
         ExecStart = "${cfg.package}/portier-broker ${cfg.configFile}";
-        WorkingDirectory = cfg.package;
         User = moduleName;
 
         Restart = "always";
