@@ -58,11 +58,6 @@ in {
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
 
-      confinement = {
-        enable = true;
-        packages = [ pkgs.cacert ];
-      };
-
       serviceConfig = {
         Type = "oneshot";
         ExecStart = script;
@@ -85,8 +80,6 @@ in {
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
         SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
-
-        BindReadOnlyPaths = [ "/etc/resolv.conf" ];
       };
     };
 

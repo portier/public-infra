@@ -147,11 +147,6 @@ in {
         BROKER_VERIFY_PUBLIC_IP = mkIf cfg.verifyPublicIp "true";
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
-      confinement = {
-        enable = true;
-        binSh = null;
-        packages = [ pkgs.cacert ];
-      };
       serviceConfig = {
         ExecStart = "${cfg.package}/portier-broker ${cfg.configFile}";
         WorkingDirectory = cfg.package;
@@ -177,9 +172,6 @@ in {
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
         SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
-
-        BindReadOnlyPaths = [ "/etc/resolv.conf" ]
-          ++ optional (cfg.configFile != "") cfg.configFile;
       };
     };
 

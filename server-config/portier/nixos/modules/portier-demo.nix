@@ -93,13 +93,6 @@ in {
         DEMO_REDIS_URL = cfg.redisUrl;
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
-      confinement = {
-        enable = true;
-        packages = [
-          cfg.package.python
-          pkgs.cacert
-        ];
-      };
       serviceConfig = {
         ExecStart = "${cfg.package}/server.py";
         WorkingDirectory = cfg.package;
@@ -125,8 +118,6 @@ in {
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
         SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
-
-        BindReadOnlyPaths = [ "/etc/resolv.conf" ];
       };
     };
 
