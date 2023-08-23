@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, python39 }:
+{ stdenv, fetchurl, python3 }:
 
 let
 
-  python = python39.withPackages (pkgs: with pkgs; [
+  python = python3.withPackages (pkgs: with pkgs; [
     pyjwt bottle cryptography fakeredis redis waitress
   ]);
 

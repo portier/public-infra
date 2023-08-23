@@ -6,12 +6,12 @@ let
 
   nix = config.nix.package.out;
 
-  python = pkgs.python39.withPackages (pkgs: with pkgs; [
+  python = pkgs.python3.withPackages (pkgs: with pkgs; [
     flask github-webhook requests
   ]);
 
   server = pkgs.runCommandLocal "webhook-server.py" {
-    buildInputs = [ python pkgs.python39Packages.flake8 ];
+    buildInputs = [ python pkgs.python3Packages.flake8 ];
   } ''
     cp '${./server.py}' $out
     flake8 --show-source $out
