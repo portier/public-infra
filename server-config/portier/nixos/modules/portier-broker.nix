@@ -148,7 +148,8 @@ in {
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
       serviceConfig = {
-        ExecStart = "${cfg.package}/bin/portier-broker ${cfg.configFile}";
+        ExecStart = "${cfg.package}/bin/portier-broker"
+          + optionalString (cfg.configFile != "") " /__portier/config.toml";
         User = moduleName;
 
         Restart = "always";
@@ -171,6 +172,8 @@ in {
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
         SystemCallFilter = [ "@system-service" "~@privileged @resources" ];
+
+        BindReadOnlyPaths = optional (cfg.configFile != "") "${cfg.configFile}:/__portier/config.toml";
       };
     };
 
