@@ -148,7 +148,7 @@ in {
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
       serviceConfig = {
-        ExecStart = "${cfg.package}/portier-broker ${cfg.configFile}";
+        ExecStart = "${cfg.package}/bin/portier-broker ${cfg.configFile}";
         User = moduleName;
 
         Restart = "always";
