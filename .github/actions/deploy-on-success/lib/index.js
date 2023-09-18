@@ -23,6 +23,7 @@ async function run() {
     repo,
     ref,
     payload: { store_path: storePath },
+    auto_merge: false,
     required_contexts: [],
   });
 }

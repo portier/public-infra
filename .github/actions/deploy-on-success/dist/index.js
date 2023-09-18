@@ -558,7 +558,7 @@ class OidcClient {
                 .catch(error => {
                 throw new Error(`Failed to get ID Token. \n 
         Error Code : ${error.statusCode}\n 
-        Error Message: ${error.result.message}`);
+        Error Message: ${error.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
             if (!id_token) {
@@ -9635,6 +9635,7 @@ async function run() {
     repo,
     ref,
     payload: { store_path: storePath },
+    auto_merge: false,
     required_contexts: [],
   });
 }
