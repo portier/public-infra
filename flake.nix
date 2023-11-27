@@ -1,7 +1,7 @@
 {
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
 
     # These match `moduleName` in the NixOS modules.
     portier-broker = {
