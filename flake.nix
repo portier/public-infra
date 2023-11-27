@@ -31,6 +31,12 @@
     # For easy `nix build`.
     packages.x86_64-linux.default = nixosConfigurations.public-portier.config.system.build.toplevel;
 
+    devShells = builtins.mapAttrs (system: pkgs: {
+      default = pkgs.mkShellNoCC {
+        packages = [ pkgs.nixos-rebuild ];
+      };
+    }) nixpkgs.legacyPackages;
+
   };
 
 }
