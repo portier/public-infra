@@ -1,7 +1,7 @@
 {
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
 
     # These match `moduleName` in the NixOS modules.
     portier-broker = {
@@ -30,6 +30,12 @@
 
     # For easy `nix build`.
     packages.x86_64-linux.default = nixosConfigurations.public-portier.config.system.build.toplevel;
+
+    devShells = builtins.mapAttrs (system: pkgs: {
+      default = pkgs.mkShellNoCC {
+        packages = [ pkgs.nixos-rebuild ];
+      };
+    }) nixpkgs.legacyPackages;
 
   };
 
