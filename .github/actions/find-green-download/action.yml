@@ -19,5 +19,5 @@ outputs:
   artifact_url:
     description: Artifact ZIP download URL
 runs:
-  using: node12
+  using: node20
   main: dist/index.js
