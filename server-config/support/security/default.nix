@@ -17,7 +17,7 @@ with lib;
 
   config = let
 
-    sshPort = 57958;
+    sshPort = 48372;
     sshPortStr = builtins.toString sshPort;
 
     concatElements = concatStringsSep ", ";
