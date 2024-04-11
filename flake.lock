@@ -22,11 +22,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1712834118,
-        "narHash": "sha256-h+oYcZCSGvjvavHmBWe3bBnU5VZZx7W/bMSTvvlmxWM=",
+        "lastModified": 1712836346,
+        "narHash": "sha256-JsH3KtKQPnCPiqBDR61eQZiaN3zJUKL8tS82J4SbqR4=",
         "owner": "portier",
         "repo": "portier-broker",
-        "rev": "5de29c9a3cf07b573fd84be1dd09b59368dc94e1",
+        "rev": "90eeba172ed0f25da226d1314e6682ce75f87aab",
         "type": "github"
       },
       "original": {
@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1712834118,
-        "narHash": "sha256-h+oYcZCSGvjvavHmBWe3bBnU5VZZx7W/bMSTvvlmxWM=",
+        "lastModified": 1712836346,
+        "narHash": "sha256-JsH3KtKQPnCPiqBDR61eQZiaN3zJUKL8tS82J4SbqR4=",
         "owner": "portier",
         "repo": "portier-broker",
-        "rev": "5de29c9a3cf07b573fd84be1dd09b59368dc94e1",
+        "rev": "90eeba172ed0f25da226d1314e6682ce75f87aab",
         "type": "github"
       },
       "original": {
