@@ -1,4 +1,4 @@
-{ config, lib, pkgs, flakeInputs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -23,8 +23,8 @@ in {
     };
     package = mkOption {
       type = types.package;
-      default = flakeInputs.${moduleName}.packages.${pkgs.system}.default;
-      defaultText = "flakeInput.${moduleName}.packages.${pkgs.system}.default";
+      default = pkgs.${moduleName};
+      defaultText = "pkgs.${moduleName}";
       description = ''
         The Portier broker package to use.
       '';
