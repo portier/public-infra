@@ -28,18 +28,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Prepare Nix auth
-      run: |
-        sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
-        sudo tee -a /etc/systemd/system/nix-daemon.service.d/auth.conf > /dev/null << EOF
-        [Service]
-        Environment="GITHUB_TOKEN=$GITHUB_TOKEN"
-        EOF
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Install Nix
-      uses: cachix/install-nix-action@v26
+      uses: DeterminateSystems/nix-installer-action@main
 
     - name: Cachix
       uses: cachix/cachix-action@v14
