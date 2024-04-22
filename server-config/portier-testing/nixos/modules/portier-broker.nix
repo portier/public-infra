@@ -151,7 +151,6 @@ in {
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/portier-broker"
           + optionalString (cfg.configFile != "") " /__portier/config.toml";
-        WorkingDirectory = cfg.package;
         User = moduleName;
 
         Restart = "always";
