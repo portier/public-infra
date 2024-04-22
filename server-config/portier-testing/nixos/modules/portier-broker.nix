@@ -145,6 +145,7 @@ in {
         BROKER_GOOGLE_CLIENT_ID = cfg.googleClientId;
         BROKER_VERIFY_WITH_RESOLVER = cfg.verifyWithResolver;
         BROKER_VERIFY_PUBLIC_IP = mkIf cfg.verifyPublicIp "true";
+        BROKER_UNCOUNTED_EMAILS = "autotest@server.portier.io";
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       };
       serviceConfig = {
