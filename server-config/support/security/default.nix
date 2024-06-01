@@ -74,6 +74,7 @@ with lib;
       enable = true;
       ports = [ sshPort ];
       openFirewall = false;
+      authorizedKeysInHomedir = false;
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;

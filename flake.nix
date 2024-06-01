@@ -1,7 +1,7 @@
 {
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.11";
+    nixpkgs.url = "nixpkgs/nixos-24.05";
 
     # These match `moduleName` in the NixOS modules.
     portier-broker = {
@@ -23,8 +23,6 @@
         { _module.args = { inherit flakeInputs; }; }
         # Main server configuration.
         ./server-config/configuration.nix
-        # Set a NIX_PATH to match the system Nixpkgs, so e.g. nix-shell works.
-        ({ lib, ... }: { nix.nixPath = lib.mkForce [ "nixpkgs=${nixpkgs}" ]; })
       ];
     };
 
