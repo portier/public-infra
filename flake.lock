@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1730086329,
-        "narHash": "sha256-W2y2gfOJ+IPV1oBborUkz5fgNnzpOh+f3BZADQYKMCo=",
+        "lastModified": 1730690969,
+        "narHash": "sha256-RxRrpyjhzS6VjQzi6ThM7dhn9VAM45Iw81Dc9+PdsVA=",
         "owner": "portier",
         "repo": "portier-broker",
-        "rev": "4a98816b53989bcbdad5929d7e52bbc29869a822",
+        "rev": "2785f1b1cdd619955e71d9e520906fb0207ed4f2",
         "type": "github"
       },
       "original": {
