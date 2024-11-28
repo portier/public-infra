@@ -1,3 +1,5 @@
+.pnp.*
+.yarn
 node_modules
 result
 target
