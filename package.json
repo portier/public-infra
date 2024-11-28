@@ -5,9 +5,9 @@
     ".github/actions/find-green-download"
   ],
   "scripts": {
-    "build:actions": "yarn build:deploy-on-success && yarn build:find-green-download",
-    "build:deploy-on-success": "cd .github/actions/deploy-on-success && yarn build",
-    "build:find-green-download": "cd .github/actions/find-green-download && yarn build"
+    "build:actions": "npm run build:deploy-on-success && npm run build:find-green-download",
+    "build:deploy-on-success": "cd .github/actions/deploy-on-success && npm run build",
+    "build:find-green-download": "cd .github/actions/find-green-download && npm run build"
   },
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
+  "packageManager": "npm@10.9.1+sha512.c89530d37c4baa38afd43e76a077a84b9aa63840b986426584fd5c5a54ab0a0b21bb1595c851042b733784b0b43706d36a494b4d8ae1a086a762cb8d3f95942a"
 }
