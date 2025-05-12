@@ -15,10 +15,25 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1746576598,
+        "narHash": "sha256-FshoQvr6Aor5SnORVvh/ZdJ1Sa2U4ZrIMwKBX5k2wu0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b3582c75c7f21ce0b429898980eddbbf05c68e55",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixpkgs-unstable",
+        "type": "indirect"
+      }
+    },
     "portier-broker": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unstable"
         ]
       },
       "locked": {
@@ -39,7 +54,7 @@
     "portier-broker-testing": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unstable"
         ]
       },
       "locked": {
@@ -60,6 +75,7 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "portier-broker": "portier-broker",
         "portier-broker-testing": "portier-broker-testing"
       }
