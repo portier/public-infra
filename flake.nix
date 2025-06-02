@@ -1,17 +1,16 @@
 {
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
 
     # These match `moduleName` in the NixOS modules.
     portier-broker = {
       url = "github:portier/portier-broker/stable";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     portier-broker-testing = {
       url = "github:portier/portier-broker/main";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
