@@ -41,7 +41,6 @@ def deploy_loop():
     """Thread entry-point that runs a loop dispatching deployments."""
 
     global next_deployment
-    global next_deployment_cv
 
     while True:
         with next_deployment_cv:
@@ -119,7 +118,6 @@ def on_deployment(data):
     """GitHub 'deployment' event handler."""
 
     global next_deployment
-    global next_deployment_cv
 
     if data["action"] != "created":
         return
